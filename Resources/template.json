@@ -66,7 +66,8 @@
         "APPINSIGHTS_INSTRUMENTATIONKEY": "[parameters('appInsightsInstrumentationKey')]",
         "CosmosDBConnectionString": "[format('AccountEndpoint={0}/;AccountKey={1};', parameters('cosmosDbEndpoint'), parameters('cosmosDbKey'))]",
         "GDPRIdentifyCustomersStoredProcedureName": "[parameters('GDPRIdentifyCustomersStoredProcedureName')]",
-        "GDPRUpdateCustomersStoredProcedureName": "[parameters('GDPRUpdateCustomersStoredProcedureName')]"
+        "GDPRUpdateCustomersStoredProcedureName": "[parameters('GDPRUpdateCustomersStoredProcedureName')]",
+        "CosmosDbEndpoint": "[parameters('cosmosDbEndpoint')]"
       },
       "copy": {
         "name": "FunctionAppSettingsCopy",
