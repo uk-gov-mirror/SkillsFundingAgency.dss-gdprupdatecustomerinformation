@@ -43,6 +43,12 @@
         },
         "workspaceResourceGroup": {
             "value": "__sharedLogAnalyticsResourceGroup__"
+        },
+        "appInsightsInstrumentationKey": {
+            "value": "__appInsightsInstrumentationKey__" 
+        },
+        "keyVaultName": {
+          "value": "__SharedKeyVaultName__"
         }
     }
 }
