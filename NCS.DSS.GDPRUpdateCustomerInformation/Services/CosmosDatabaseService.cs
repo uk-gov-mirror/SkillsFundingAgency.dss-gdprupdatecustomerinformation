@@ -12,10 +12,7 @@ namespace NCS.DSS.DataUtility.Services
         private readonly CosmosClient _cosmosDbClient;
         private readonly ILogger<CosmosDatabaseService> _logger;
 
-        /*private const string CustomerCosmosDb = "customers";
-        private const string SubscriptionsCosmosDb = "subscriptions";
-        private const string TransferCosmosDb = "transfers";
-        private const string WebchatsCosmosDb = "webchats";*/
+        /*private const string CustomerCosmosDb = "customers"*/
 
         public CosmosDatabaseService(CosmosClient cosmosClient, ILogger<CosmosDatabaseService> logger)
         {
@@ -114,6 +111,30 @@ namespace NCS.DSS.DataUtility.Services
             List<Session> sessions = await RetrieveSessionsForCustomerAsync(customerId, cosmosDbContainer);
 
             return sessions.Count();
+        }
+
+        public async Task<int> PurgeSubscriptionsForCustomerAsync(Guid customerId)
+        {
+            Container cosmosDbContainer = _cosmosDbClient.GetContainer("subscriptions", "subscriptions");
+            List<Subscription> subscriptions = await RetrieveSubscriptionsForCustomerAsync(customerId, cosmosDbContainer);
+
+            return subscriptions.Count();
+        }
+
+        public async Task<int> PurgeTransfersForCustomerAsync(Guid customerId)
+        {
+            Container cosmosDbContainer = _cosmosDbClient.GetContainer("transfers", "transfers");
+            List<Transfer> transfers = await RetrieveTransferForCustomerAsync(customerId, cosmosDbContainer);
+
+            return transfers.Count();
+        }
+
+        public async Task<int> PurgeWebchatsForCustomerAsync(Guid customerId)
+        {
+            Container cosmosDbContainer = _cosmosDbClient.GetContainer("webchats", "webchats");
+            List<Webchat> webchats = await RetrieveWebchatsForCustomerAsync(customerId, cosmosDbContainer);
+
+            return webchats.Count();
         }
 
         // private helper methods
@@ -432,9 +453,87 @@ namespace NCS.DSS.DataUtility.Services
             }
         }
 
-        /*private const string CustomerCosmosDb = "customers";
-       private const string SubscriptionsCosmosDb = "subscriptions";
-       private const string TransferCosmosDb = "transfers";
-       private const string WebchatsCosmosDb = "webchats";*/
+        private async Task<List<Subscription>> RetrieveSubscriptionsForCustomerAsync(Guid customerId, Container cosmosDbContainer)
+        {
+            _logger.LogInformation($"Method '{nameof(RetrieveSubscriptionsForCustomerAsync)}' has been invoked");
+
+            List<Subscription> subscriptionList = new List<Subscription>();
+
+            _logger.LogInformation($"Attempting to retrieve all Subscription documents with CustomerId '{customerId}' from Cosmos DB");
+
+            using (FeedIterator<Subscription> setIterator = cosmosDbContainer
+                .GetItemLinqQueryable<Subscription>()
+                .Where(subscription => subscription.CustomerId == customerId)
+                .ToFeedIterator()
+            )
+            {
+                while (setIterator.HasMoreResults)
+                {
+                    foreach (Subscription subscription in await setIterator.ReadNextAsync())
+                    {
+                        subscriptionList.Add(subscription);
+                    }
+                }
+
+                _logger.LogInformation("Processing complete");
+                return subscriptionList;
+            }
+        }
+
+        private async Task<List<Transfer>> RetrieveTransferForCustomerAsync(Guid customerId, Container cosmosDbContainer)
+        {
+            _logger.LogInformation($"Method '{nameof(RetrieveTransferForCustomerAsync)}' has been invoked");
+
+            List<Transfer> transferList = new List<Transfer>();
+
+            _logger.LogInformation($"Attempting to retrieve all Transfer documents with CustomerId '{customerId}' from Cosmos DB");
+
+            using (FeedIterator<Transfer> setIterator = cosmosDbContainer
+                .GetItemLinqQueryable<Transfer>()
+                .Where(transfer => transfer.CustomerId == customerId)
+                .ToFeedIterator()
+            )
+            {
+                while (setIterator.HasMoreResults)
+                {
+                    foreach (Transfer transfer in await setIterator.ReadNextAsync())
+                    {
+                        transferList.Add(transfer);
+                    }
+                }
+
+                _logger.LogInformation("Processing complete");
+                return transferList;
+            }
+        }
+
+        private async Task<List<Webchat>> RetrieveWebchatsForCustomerAsync(Guid customerId, Container cosmosDbContainer)
+        {
+            _logger.LogInformation($"Method '{nameof(RetrieveWebchatsForCustomerAsync)}' has been invoked");
+
+            List<Webchat> webchatList = new List<Webchat>();
+
+            _logger.LogInformation($"Attempting to retrieve all Webchat documents with CustomerId '{customerId}' from Cosmos DB");
+
+            using (FeedIterator<Webchat> setIterator = cosmosDbContainer
+                .GetItemLinqQueryable<Webchat>()
+                .Where(webchat => webchat.CustomerId == customerId)
+                .ToFeedIterator()
+            )
+            {
+                while (setIterator.HasMoreResults)
+                {
+                    foreach (Webchat webchat in await setIterator.ReadNextAsync())
+                    {
+                        webchatList.Add(webchat);
+                    }
+                }
+
+                _logger.LogInformation("Processing complete");
+                return webchatList;
+            }
+        }
+
+        /*private const string CustomerCosmosDb = "customers";*/
     }
 }

@@ -46,9 +46,13 @@ namespace NCS.DSS.DataUtility.Function
                 int learningProgressionDocCount = await _cosmosDatabaseService.PurgeLearningProgressionsForCustomerAsync(queueBody.CustomerId);
                 int outcomeDocCount = await _cosmosDatabaseService.PurgeOutcomesForCustomerAsync(queueBody.CustomerId);
                 int sessionDocCount = await _cosmosDatabaseService.PurgeSessionsForCustomerAsync(queueBody.CustomerId);
+                int subscriptionDocCount = await _cosmosDatabaseService.PurgeSubscriptionsForCustomerAsync(queueBody.CustomerId);
+                int transferDocCount = await _cosmosDatabaseService.PurgeTransfersForCustomerAsync(queueBody.CustomerId);
+                int webchatDocCount = await _cosmosDatabaseService.PurgeWebchatsForCustomerAsync(queueBody.CustomerId);
 
                 int totalDocumentCount = TotalCounter(actionPlanDocCount, actionDocCount, addressDocCount, contactDetailDocCount, digitalIdentityDocCount,
-                    diversityDetailDocCount, employmentProgressionDocCount, goalDocCount, learningProgressionDocCount, outcomeDocCount, sessionDocCount);
+                    diversityDetailDocCount, employmentProgressionDocCount, goalDocCount, learningProgressionDocCount, outcomeDocCount, sessionDocCount,
+                    subscriptionDocCount, transferDocCount, webchatDocCount);
 
                 _logger.LogInformation($">> All docs for customer '{queueBody.CustomerId.ToString()}' <<");
                 _logger.LogInformation($"- Action Plans: {actionPlanDocCount}");
@@ -62,6 +66,9 @@ namespace NCS.DSS.DataUtility.Function
                 _logger.LogInformation($"- Learning Progressions: {learningProgressionDocCount}");
                 _logger.LogInformation($"- Outcomes: {outcomeDocCount}");
                 _logger.LogInformation($"- Sessions: {sessionDocCount}");
+                _logger.LogInformation($"- Subscriptions: {subscriptionDocCount}");
+                _logger.LogInformation($"- Transfers: {transferDocCount}");
+                _logger.LogInformation($"- Webchats: {webchatDocCount}");
                 _logger.LogInformation($">> Grand total : {totalDocumentCount} <<");
 
                 // Complete the message

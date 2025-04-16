@@ -23,5 +23,11 @@
         Task<int> PurgeOutcomesForCustomerAsync(Guid customerId);
 
         Task<int> PurgeSessionsForCustomerAsync(Guid customerId);
+
+        Task<int> PurgeSubscriptionsForCustomerAsync(Guid customerId);
+
+        Task<int> PurgeTransfersForCustomerAsync(Guid customerId);
+
+        Task<int> PurgeWebchatsForCustomerAsync(Guid customerId);
     }
 }
