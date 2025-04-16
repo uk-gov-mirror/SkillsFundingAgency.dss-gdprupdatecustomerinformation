@@ -1,0 +1,50 @@
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.Functions.Worker;
+using Microsoft.Extensions.Logging;
+using NCS.DSS.DataUtility.Interfaces;
+
+namespace NCS.DSS.DataUtility.Function
+{
+    public class RetrieveCustomersToBeRedacted
+    {
+        private readonly ILogger<RetrieveCustomersToBeRedacted> _logger;
+        private readonly ISqlDbService _sqlDbService;
+
+        public RetrieveCustomersToBeRedacted(ILogger<RetrieveCustomersToBeRedacted> logger, ISqlDbService sqlDbService)
+        {
+            _logger = logger;
+            _sqlDbService = sqlDbService;
+        }
+
+        // At 12:00 on day-of-month 1 (i.e every month on the first day - https://crontab.guru/)
+        // 0 12 1 * *
+        [Function(nameof(RetrieveCustomersToBeRedacted))]
+        public async Task<IActionResult> Run([TimerTrigger("*/15 * * * *")] TimerInfo timer) // every 15 minutes
+        {
+            _logger.LogInformation($"Function '{nameof(RetrieveCustomersToBeRedacted)}' has been invoked");
+
+            try
+            {
+                _logger.LogInformation("Start - retrieving list of customer IDs which require redaction");
+                List<Guid> customerIds = await _sqlDbService.RetrieveCustomerIdsAsync();
+
+                if (customerIds.Count == 0)
+                {
+                    _logger.LogInformation("End - no customers to be redacted (data is already compliant)");
+                    return new NoContentResult();
+                }
+
+                _logger.LogInformation($"End - '{customerIds.Count.ToString()}' customers have been identified as requiring redaction");
+
+                // TODO: Add each to service bus queue
+
+                return new OkResult();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"INVOCATION ERROR ({nameof(RetrieveCustomersToBeRedacted)}): function has failed with exception: {ex}");
+                throw;
+            }
+        }
+    }
+}
