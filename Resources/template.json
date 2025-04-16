@@ -52,12 +52,6 @@
     },
     "ServiceBusConnectionString": {
       "type": "string"
-    },
-    "RedactionQueueName": {
-      "type": "string"
-    },
-    "RedactionTimerSchedule": {
-      "type": "string"
     }
   },
   "resources": [
@@ -76,9 +70,9 @@
         "CosmosDBConnectionString": "[format('AccountEndpoint={0}/;AccountKey={1};', parameters('cosmosDbEndpoint'), parameters('cosmosDbKey'))]",
         "GDPRIdentifyCustomersStoredProcedureName": "[parameters('GDPRIdentifyCustomersStoredProcedureName')]",
         "GDPRUpdateCustomersStoredProcedureName": "[parameters('GDPRUpdateCustomersStoredProcedureName')]",
-        "ServiceBusConnectionString": "[parameters('ServiceBusConnectionString')]",
-        "RedactionQueueName": "[parameters('RedactionQueueName')]",
-        "RedactionTimerSchedule": "[parameters('RedactionTimerSchedule')]"
+        "ServiceBusConnectionString": "[format('@Microsoft.KeyVault(VaultName={0};SecretName=ServiceBusConnectionString)', parameters('keyVaultName'))]",
+        "RedactionQueueName": "RedactCustomer",
+        "RedactionTimerSchedule": "*/15 * * * *"
       },
       "copy": {
         "name": "FunctionAppSettingsCopy",
