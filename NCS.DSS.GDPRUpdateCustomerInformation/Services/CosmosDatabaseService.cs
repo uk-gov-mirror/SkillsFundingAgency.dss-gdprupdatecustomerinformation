@@ -32,7 +32,7 @@ namespace NCS.DSS.DataUtility.Services
             _logger = logger;
         }
 
-        public async Task<bool> PurgeActionPlansForCustomerAsync(Guid customerId)
+        public async Task PurgeActionPlansForCustomerAsync(Guid customerId)
         {
             Container cosmosDbContainer = _cosmosDbClient.GetContainer("actionplans", "actionplans");
             List<ActionPlan> actionPlans = await RetrieveActionPlansForCustomerAsync(customerId, cosmosDbContainer);
@@ -41,8 +41,6 @@ namespace NCS.DSS.DataUtility.Services
             {
                 bool success = await DeleteCosmosDocumentAsync(actionPlan.ActionPlanId.ToString(), cosmosDbContainer);
             }*/
-
-            return true;
         }
 
         // private helper methods

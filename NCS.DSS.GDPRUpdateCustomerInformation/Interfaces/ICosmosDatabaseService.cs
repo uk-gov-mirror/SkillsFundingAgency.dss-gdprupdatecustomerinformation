@@ -2,6 +2,6 @@
 {
     public interface ICosmosDatabaseService
     {
-        Task<bool> PurgeActionPlansForCustomerAsync(Guid customerId);
+        Task PurgeActionPlansForCustomerAsync(Guid customerId);
     }
 }

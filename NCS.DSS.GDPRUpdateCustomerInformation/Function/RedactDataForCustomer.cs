@@ -20,8 +20,11 @@ namespace NCS.DSS.DataUtility.Function
         }
 
         [Function(nameof(RedactDataForCustomer))]
-        public async Task Run([ServiceBusTrigger("%RedactionQueueName%", Connection = "ServiceBusConnectionString", AutoCompleteMessages = false)] ServiceBusReceivedMessage message, ServiceBusMessageActions messageActions)
-        {
+        public async Task Run(
+            [ServiceBusTrigger("%RedactionQueueName%", Connection = "ServiceBusConnectionString", AutoCompleteMessages = false)] 
+            ServiceBusReceivedMessage message, 
+            ServiceBusMessageActions messageActions
+        ) {
             _logger.LogInformation($"Function '{nameof(RedactDataForCustomer)}' has been invoked");
 
             // convert queue message into usage object
@@ -30,14 +33,20 @@ namespace NCS.DSS.DataUtility.Function
 
             _logger.LogInformation($"Customer with ID '{queueBody.CustomerId.ToString()}' will now be processed");
 
-            bool success = await _cosmosDatabaseService.PurgeActionPlansForCustomerAsync(queueBody.CustomerId);
+            try
+            {
+                await _cosmosDatabaseService.PurgeActionPlansForCustomerAsync(queueBody.CustomerId);
 
-            //_logger.LogInformation("Message ID: {id}", message.MessageId);
-            //_logger.LogInformation("Message Body: {body}", message.Body); // RedactionQueueMessage
-            //_logger.LogInformation("Message Content-Type: {contentType}", message.ContentType);
+                // Complete the message
+                await messageActions.CompleteMessageAsync(message);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"INVOCATION ERROR ({nameof(RedactDataForCustomer)}): function has failed with exception: {ex}");
+                throw;
+            }
 
-            // Complete the message
-            await messageActions.CompleteMessageAsync(message);
+            _logger.LogInformation($"Function '{nameof(RedactDataForCustomer)}' has finished invocation");
         }
     }
 }
