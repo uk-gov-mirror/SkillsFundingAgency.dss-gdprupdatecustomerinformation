@@ -49,9 +49,6 @@
     },
     "keyVaultName": {
       "type": "string"
-    },
-    "ServiceBusConnectionString": {
-      "type": "string"
     }
   },
   "resources": [
