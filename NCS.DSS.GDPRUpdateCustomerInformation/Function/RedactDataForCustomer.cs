@@ -18,7 +18,7 @@ namespace NCS.DSS.DataUtility.Function
         }
 
         [Function(nameof(RedactDataForCustomer))]
-        public async Task<IActionResult> Run([ServiceBusTrigger("%RedactionQueueName%")] ServiceBusReceivedMessage message, ServiceBusMessageActions messageActions)
+        public async Task<IActionResult> Run([ServiceBusTrigger("%RedactionQueueName%", Connection = "ServiceBusConnectionString")] ServiceBusReceivedMessage message, ServiceBusMessageActions messageActions)
         {
             _logger.LogInformation($"Function '{nameof(RedactDataForCustomer)}' has been invoked");
 
