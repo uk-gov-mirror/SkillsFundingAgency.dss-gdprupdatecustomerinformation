@@ -26,7 +26,7 @@ namespace NCS.DSS.DataUtility.Services
             _logger = logger;
         }
 
-        public async Task PurgeActionPlansForCustomerAsync(Guid customerId)
+        public async Task<int> PurgeActionPlansForCustomerAsync(Guid customerId)
         {
             Container cosmosDbContainer = _cosmosDbClient.GetContainer("actionplans", "actionplans");
             List<ActionPlan> actionPlans = await RetrieveActionPlansForCustomerAsync(customerId, cosmosDbContainer);
@@ -35,48 +35,64 @@ namespace NCS.DSS.DataUtility.Services
             {
                 bool success = await DeleteCosmosDocumentAsync(actionPlan.ActionPlanId.ToString(), cosmosDbContainer);
             }*/
+
+            return actionPlans.Count();
         }
 
-        public async Task PurgeActionsForCustomerAsync(Guid customerId)
+        public async Task<int> PurgeActionsForCustomerAsync(Guid customerId)
         {
             Container cosmosDbContainer = _cosmosDbClient.GetContainer("actions", "actions");
             List<Action> actions = await RetrieveActionsForCustomerAsync(customerId, cosmosDbContainer);
+
+            return actions.Count();
         }
 
-        public async Task PurgeAddressesForCustomerAsync(Guid customerId)
+        public async Task<int> PurgeAddressesForCustomerAsync(Guid customerId)
         {
             Container cosmosDbContainer = _cosmosDbClient.GetContainer("addresses", "addresses");
             List<Address> addresses = await RetrieveAddressesForCustomerAsync(customerId, cosmosDbContainer);
+
+            return addresses.Count();
         }
 
-        public async Task PurgeContactDetailsForCustomerAsync(Guid customerId)
+        public async Task<int> PurgeContactDetailsForCustomerAsync(Guid customerId)
         {
             Container cosmosDbContainer = _cosmosDbClient.GetContainer("contacts", "contacts");
             List<ContactDetail> contactDetails = await RetrieveContactDetailsForCustomerAsync(customerId, cosmosDbContainer);
+
+            return contactDetails.Count();
         }
 
-        public async Task PurgeDigitalIdentitiesForCustomerAsync(Guid customerId)
+        public async Task<int> PurgeDigitalIdentitiesForCustomerAsync(Guid customerId)
         {
             Container cosmosDbContainer = _cosmosDbClient.GetContainer("digitalidentities", "digitalidentities");
             List<DigitalIdentity> digitalIdentities = await RetrieveDigitalIdentitiesForCustomerAsync(customerId, cosmosDbContainer);
+
+            return digitalIdentities.Count();
         }
 
-        public async Task PurgeDiversityDetailsForCustomerAsync(Guid customerId)
+        public async Task<int> PurgeDiversityDetailsForCustomerAsync(Guid customerId)
         {
             Container cosmosDbContainer = _cosmosDbClient.GetContainer("diversitydetails", "diversitydetails");
             List<DiversityDetail> diversityDetails = await RetrieveDiversityDetailsForCustomerAsync(customerId, cosmosDbContainer);
+
+            return diversityDetails.Count();
         }
 
-        public async Task PurgeEmploymentProgressionsForCustomerAsync(Guid customerId)
+        public async Task<int> PurgeEmploymentProgressionsForCustomerAsync(Guid customerId)
         {
             Container cosmosDbContainer = _cosmosDbClient.GetContainer("employmentprogressions", "employmentprogressions");
             List<EmploymentProgression> employmentProgressions = await RetrieveEmploymentProgressionsForCustomerAsync(customerId, cosmosDbContainer);
+
+            return employmentProgressions.Count();
         }
 
-        public async Task PurgeGoalsForCustomerAsync(Guid customerId)
+        public async Task<int> PurgeGoalsForCustomerAsync(Guid customerId)
         {
             Container cosmosDbContainer = _cosmosDbClient.GetContainer("goals", "goals");
             List<Goal> goals = await RetrieveGoalsForCustomerAsync(customerId, cosmosDbContainer);
+
+            return goals.Count();
         }
 
         // private helper methods
@@ -120,8 +136,7 @@ namespace NCS.DSS.DataUtility.Services
                     }
                 }
 
-                _logger.LogInformation($"Processing complete. '{actionPlanList.Count().ToString()}' document(s) matching the criteria have been retrieved");
-
+                _logger.LogInformation("Processing complete");
                 return actionPlanList;
             }
         }
@@ -148,8 +163,7 @@ namespace NCS.DSS.DataUtility.Services
                     }
                 }
 
-                _logger.LogInformation($"Processing complete. '{actionList.Count().ToString()}' document(s) matching the criteria have been retrieved");
-
+                _logger.LogInformation("Processing complete");
                 return actionList;
             }
         }
@@ -176,8 +190,7 @@ namespace NCS.DSS.DataUtility.Services
                     }
                 }
 
-                _logger.LogInformation($"Processing complete. '{addressList.Count().ToString()}' document(s) matching the criteria have been retrieved");
-
+                _logger.LogInformation("Processing complete");
                 return addressList;
             }
         }
@@ -204,8 +217,7 @@ namespace NCS.DSS.DataUtility.Services
                     }
                 }
 
-                _logger.LogInformation($"Processing complete. '{contactDetailList.Count().ToString()}' document(s) matching the criteria have been retrieved");
-
+                _logger.LogInformation("Processing complete");
                 return contactDetailList;
             }
         }
@@ -232,8 +244,7 @@ namespace NCS.DSS.DataUtility.Services
                     }
                 }
 
-                _logger.LogInformation($"Processing complete. '{digitalIdentityList.Count().ToString()}' document(s) matching the criteria have been retrieved");
-
+                _logger.LogInformation("Processing complete");
                 return digitalIdentityList;
             }
         }
@@ -260,8 +271,7 @@ namespace NCS.DSS.DataUtility.Services
                     }
                 }
 
-                _logger.LogInformation($"Processing complete. '{diversityDetailList.Count().ToString()}' document(s) matching the criteria have been retrieved");
-
+                _logger.LogInformation("Processing complete");
                 return diversityDetailList;
             }
         }
@@ -288,8 +298,7 @@ namespace NCS.DSS.DataUtility.Services
                     }
                 }
 
-                _logger.LogInformation($"Processing complete. '{employmentProgressionList.Count().ToString()}' document(s) matching the criteria have been retrieved");
-
+                _logger.LogInformation("Processing complete");
                 return employmentProgressionList;
             }
         }
@@ -316,8 +325,7 @@ namespace NCS.DSS.DataUtility.Services
                     }
                 }
 
-                _logger.LogInformation($"Processing complete. '{goalList.Count().ToString()}' document(s) matching the criteria have been retrieved");
-
+                _logger.LogInformation("Processing complete");
                 return goalList;
             }
         }

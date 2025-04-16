@@ -2,20 +2,20 @@
 {
     public interface ICosmosDatabaseService
     {
-        Task PurgeActionPlansForCustomerAsync(Guid customerId);
+        Task<int> PurgeActionPlansForCustomerAsync(Guid customerId);
         
-        Task PurgeActionsForCustomerAsync(Guid customerId);
+        Task<int> PurgeActionsForCustomerAsync(Guid customerId);
         
-        Task PurgeAddressesForCustomerAsync(Guid customerId);
+        Task<int> PurgeAddressesForCustomerAsync(Guid customerId);
         
-        Task PurgeContactDetailsForCustomerAsync(Guid customerId);
+        Task<int> PurgeContactDetailsForCustomerAsync(Guid customerId);
 
-        Task PurgeDigitalIdentitiesForCustomerAsync(Guid customerId);
+        Task<int> PurgeDigitalIdentitiesForCustomerAsync(Guid customerId);
 
-        Task PurgeDiversityDetailsForCustomerAsync(Guid customerId);
+        Task<int> PurgeDiversityDetailsForCustomerAsync(Guid customerId);
 
-        Task PurgeEmploymentProgressionsForCustomerAsync(Guid customerId);
+        Task<int> PurgeEmploymentProgressionsForCustomerAsync(Guid customerId);
 
-        Task PurgeGoalsForCustomerAsync(Guid customerId);
+        Task<int> PurgeGoalsForCustomerAsync(Guid customerId);
     }
 }
