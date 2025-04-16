@@ -49,6 +49,15 @@
         },
         "keyVaultName": {
           "value": "__SharedKeyVaultName__"
+        },
+        "ServiceBusConnectionString": {
+            "value": "__ServiceBusConnectionString__"
+        },
+        "RedactionQueueName": {
+            "value": "__RedactionQueueName__"
+        },
+        "RedactionTimerSchedule": {
+            "value": "__RedactionTimerSchedule__"
         }
     }
 }

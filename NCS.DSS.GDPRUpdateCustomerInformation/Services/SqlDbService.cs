@@ -18,7 +18,7 @@ namespace NCS.DSS.DataUtility.Services
 
         public async Task<List<Guid>> RetrieveCustomerIdsAsync()
         {
-            _logger.LogInformation("SqlDbService function 'RetrieveCustomerIdsAsync' has been called");
+            _logger.LogInformation("SqlDbService method 'RetrieveCustomerIdsAsync' has been called");
 
             List<Guid> customerIdList = new List<Guid>();
 

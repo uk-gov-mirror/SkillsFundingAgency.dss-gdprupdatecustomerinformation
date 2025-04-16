@@ -22,17 +22,18 @@ namespace NCS.DSS.DataUtility
                 services.AddSingleton<IIdentifyAndAnonymiseDataService, IdentifyAndAnonymiseDataService>();
                 services.AddSingleton<IGenericDataService, GenericDataService>();
                 services.AddSingleton<ISqlDbService, SqlDbService>();
+                services.AddSingleton<IServiceBusService, ServiceBusService>();
                 services.AddSingleton(s => new CosmosClient(Environment.GetEnvironmentVariable("CosmosDBConnectionString")));
                 
-                /*services.AddSingleton(sp =>
+                services.AddSingleton(sp =>
                 {
-                    ServiceBusClient client = new ServiceBusClient(Environment.GetEnvironmentVariable("serviceBusConnectionString"), new ServiceBusClientOptions
+                    ServiceBusClient client = new ServiceBusClient(Environment.GetEnvironmentVariable("ServiceBusConnectionString"), new ServiceBusClientOptions
                     {
                         TransportType = ServiceBusTransportType.AmqpWebSockets
                     });
 
                     return client;
-                });*/
+                });
 
                 services.Configure<LoggerFilterOptions>(options =>
                 {

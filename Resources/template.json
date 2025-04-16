@@ -49,6 +49,15 @@
     },
     "keyVaultName": {
       "type": "string"
+    },
+    "ServiceBusConnectionString": {
+      "type": "string"
+    },
+    "RedactionQueueName": {
+      "type": "string"
+    },
+    "RedactionTimerSchedule": {
+      "type": "string"
     }
   },
   "resources": [
@@ -66,7 +75,10 @@
         "APPINSIGHTS_INSTRUMENTATIONKEY": "[parameters('appInsightsInstrumentationKey')]",
         "CosmosDBConnectionString": "[format('AccountEndpoint={0}/;AccountKey={1};', parameters('cosmosDbEndpoint'), parameters('cosmosDbKey'))]",
         "GDPRIdentifyCustomersStoredProcedureName": "[parameters('GDPRIdentifyCustomersStoredProcedureName')]",
-        "GDPRUpdateCustomersStoredProcedureName": "[parameters('GDPRUpdateCustomersStoredProcedureName')]"
+        "GDPRUpdateCustomersStoredProcedureName": "[parameters('GDPRUpdateCustomersStoredProcedureName')]",
+        "ServiceBusConnectionString": "[parameters('ServiceBusConnectionString')]",
+        "RedactionQueueName": "[parameters('RedactionQueueName')]",
+        "RedactionTimerSchedule": "[parameters('RedactionTimerSchedule')]"
       },
       "copy": {
         "name": "FunctionAppSettingsCopy",
