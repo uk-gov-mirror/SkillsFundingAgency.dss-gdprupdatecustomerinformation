@@ -24,6 +24,8 @@ namespace NCS.DSS.DataUtility.Services
         private const string TransferCosmosDb = "transfers";
         private const string WebchatsCosmosDb = "webchats";
 
+        // doesn't currently delete interactions
+
         public CosmosDBService(CosmosClient cosmosClient, ILogger<CosmosDBService> logger)
         {
             _cosmosDbClient = cosmosClient;

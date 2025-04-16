@@ -23,7 +23,16 @@ namespace NCS.DSS.DataUtility
                 services.AddSingleton<IGenericDataService, GenericDataService>();
                 services.AddSingleton<ISqlDbService, SqlDbService>();
                 services.AddSingleton<IServiceBusService, ServiceBusService>();
-                services.AddSingleton(s => new CosmosClient(Environment.GetEnvironmentVariable("CosmosDBConnectionString")));
+                services.AddSingleton<ICosmosDatabaseService, CosmosDatabaseService>();
+                
+                services.AddSingleton(sp => {
+                    var options = new CosmosClientOptions()
+                    {
+                        ConnectionMode = ConnectionMode.Gateway
+                    };
+
+                    return new CosmosClient(Environment.GetEnvironmentVariable("CosmosDBConnectionString"), options);
+                });
                 
                 services.AddSingleton(sp =>
                 {
