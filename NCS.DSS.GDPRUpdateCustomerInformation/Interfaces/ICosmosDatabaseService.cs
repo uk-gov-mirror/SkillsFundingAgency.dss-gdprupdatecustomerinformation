@@ -3,11 +3,11 @@
     public interface ICosmosDatabaseService
     {
         Task<int> PurgeActionPlansForCustomerAsync(Guid customerId);
-        
+
         Task<int> PurgeActionsForCustomerAsync(Guid customerId);
-        
+
         Task<int> PurgeAddressesForCustomerAsync(Guid customerId);
-        
+
         Task<int> PurgeContactDetailsForCustomerAsync(Guid customerId);
 
         Task<int> PurgeDigitalIdentitiesForCustomerAsync(Guid customerId);

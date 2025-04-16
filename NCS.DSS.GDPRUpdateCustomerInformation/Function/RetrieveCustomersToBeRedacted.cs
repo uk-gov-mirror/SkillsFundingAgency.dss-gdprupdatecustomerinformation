@@ -19,7 +19,7 @@ namespace NCS.DSS.DataUtility.Function
         }
 
         [Function(nameof(RetrieveCustomersToBeRedacted))]
-        public async Task Run([TimerTrigger("%RedactionTimerSchedule%")] TimerInfo timer) 
+        public async Task Run([TimerTrigger("%RedactionTimerSchedule%")] TimerInfo timer)
         {
             _logger.LogInformation($"Function '{nameof(RetrieveCustomersToBeRedacted)}' has been invoked");
 

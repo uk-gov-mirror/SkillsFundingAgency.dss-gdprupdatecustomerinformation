@@ -17,15 +17,16 @@ namespace NCS.DSS.DataUtility
             {
                 services.AddApplicationInsightsTelemetryWorkerService();
                 services.ConfigureFunctionsApplicationInsights();
-                
+
                 services.AddSingleton<ICosmosDBService, CosmosDBService>();
                 services.AddSingleton<IIdentifyAndAnonymiseDataService, IdentifyAndAnonymiseDataService>();
                 services.AddSingleton<IGenericDataService, GenericDataService>();
                 services.AddSingleton<ISqlDbService, SqlDbService>();
                 services.AddSingleton<IServiceBusService, ServiceBusService>();
                 services.AddSingleton<ICosmosDatabaseService, CosmosDatabaseService>();
-                
-                services.AddSingleton(sp => {
+
+                services.AddSingleton(sp =>
+                {
                     var options = new CosmosClientOptions()
                     {
                         ConnectionMode = ConnectionMode.Gateway
@@ -33,7 +34,7 @@ namespace NCS.DSS.DataUtility
 
                     return new CosmosClient(Environment.GetEnvironmentVariable("CosmosDBConnectionString"), options);
                 });
-                
+
                 services.AddSingleton(sp =>
                 {
                     ServiceBusClient client = new ServiceBusClient(Environment.GetEnvironmentVariable("ServiceBusConnectionString"), new ServiceBusClientOptions

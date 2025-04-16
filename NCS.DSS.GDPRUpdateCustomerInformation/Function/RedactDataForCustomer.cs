@@ -21,10 +21,11 @@ namespace NCS.DSS.DataUtility.Function
 
         [Function(nameof(RedactDataForCustomer))]
         public async Task Run(
-            [ServiceBusTrigger("%RedactionQueueName%", Connection = "ServiceBusConnectionString", AutoCompleteMessages = false)] 
-            ServiceBusReceivedMessage message, 
+            [ServiceBusTrigger("%RedactionQueueName%", Connection = "ServiceBusConnectionString", AutoCompleteMessages = false)]
+            ServiceBusReceivedMessage message,
             ServiceBusMessageActions messageActions
-        ) {
+        )
+        {
             _logger.LogInformation($"Function '{nameof(RedactDataForCustomer)}' has been invoked");
 
             // convert queue message into usage object
@@ -86,12 +87,12 @@ namespace NCS.DSS.DataUtility.Function
         private static int TotalCounter(params int[] input)
         {
             int total = 0;
-            
+
             foreach (int i in input)
-            { 
+            {
                 total += i;
             }
-            
+
             return total;
         }
     }

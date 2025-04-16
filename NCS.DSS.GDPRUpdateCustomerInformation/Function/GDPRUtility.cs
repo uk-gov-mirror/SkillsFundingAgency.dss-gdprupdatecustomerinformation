@@ -23,13 +23,13 @@ namespace NCS.DSS.DataUtility.Function
         */
 
         [Function(nameof(GDPRUtility))]
-        [FixedDelayRetry(3, "00:30:00")] 
+        [FixedDelayRetry(3, "00:30:00")]
         public async Task<IActionResult> RunAsync([TimerTrigger("0 2 1 5,11 *")] TimerInfo timer)
         {
             const string functionName = nameof(GDPRUtility);
 
             _logger.LogInformation("{FunctionName} has been invoked", functionName);
-            
+
             try
             {
                 _logger.LogInformation("Attempting to retrieve list of customer IDs");

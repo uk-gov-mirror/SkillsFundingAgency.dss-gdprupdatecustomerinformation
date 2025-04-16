@@ -155,11 +155,11 @@ namespace NCS.DSS.DataUtility.Services
                 return true;
             }
         }
-        
+
         private async Task<List<ActionPlan>> RetrieveActionPlansForCustomerAsync(Guid customerId, Container cosmosDbContainer)
         {
             _logger.LogInformation($"Method '{nameof(RetrieveActionPlansForCustomerAsync)}' has been invoked");
-            
+
             List<ActionPlan> actionPlanList = new List<ActionPlan>();
 
             _logger.LogInformation($"Attempting to retrieve all Action Plan documents with CustomerId '{customerId}' from Cosmos DB");

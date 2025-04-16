@@ -119,7 +119,7 @@ namespace NCS.DSS.DataUtility.Services
             string queryString;
             if (int_bool)
             {
-                queryString = $"SELECT * FROM c WHERE c.{field} = {value}"; 
+                queryString = $"SELECT * FROM c WHERE c.{field} = {value}";
             }
             else
             {
