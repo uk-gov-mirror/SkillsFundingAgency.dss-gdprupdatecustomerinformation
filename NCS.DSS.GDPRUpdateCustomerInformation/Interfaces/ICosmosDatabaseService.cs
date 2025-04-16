@@ -29,5 +29,7 @@
         Task<int> PurgeTransfersForCustomerAsync(Guid customerId);
 
         Task<int> PurgeWebchatsForCustomerAsync(Guid customerId);
+
+        Task<int> PurgeCustomerRecordAsync(Guid customerId);
     }
 }

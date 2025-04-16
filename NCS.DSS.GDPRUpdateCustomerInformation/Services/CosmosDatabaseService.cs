@@ -12,8 +12,6 @@ namespace NCS.DSS.DataUtility.Services
         private readonly CosmosClient _cosmosDbClient;
         private readonly ILogger<CosmosDatabaseService> _logger;
 
-        /*private const string CustomerCosmosDb = "customers"*/
-
         public CosmosDatabaseService(CosmosClient cosmosClient, ILogger<CosmosDatabaseService> logger)
         {
             _cosmosDbClient = cosmosClient;
@@ -135,6 +133,14 @@ namespace NCS.DSS.DataUtility.Services
             List<Webchat> webchats = await RetrieveWebchatsForCustomerAsync(customerId, cosmosDbContainer);
 
             return webchats.Count();
+        }
+
+        public async Task<int> PurgeCustomerRecordAsync(Guid customerId)
+        {
+            Container cosmosDbContainer = _cosmosDbClient.GetContainer("customers", "customers");
+            Customer customer = await RetrieveCustomerRecordAsync(customerId, cosmosDbContainer);
+
+            return customer == null ? 0 : 1;
         }
 
         // private helper methods
@@ -534,6 +540,26 @@ namespace NCS.DSS.DataUtility.Services
             }
         }
 
-        /*private const string CustomerCosmosDb = "customers";*/
+        private async Task<Customer> RetrieveCustomerRecordAsync(Guid customerId, Container cosmosDbContainer)
+        {
+            _logger.LogInformation($"Method '{nameof(RetrieveCustomerRecordAsync)}' has been invoked");
+            _logger.LogInformation($"Attempting to retrieve customer document with ID '{customerId}' from Cosmos DB");
+
+            using (ResponseMessage response = await cosmosDbContainer.ReadItemStreamAsync(customerId.ToString(), PartitionKey.None))
+            {
+                _logger.LogInformation($"Status code returned was '{((int)response.StatusCode)} - {response.StatusCode}'");
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    _logger.LogWarning($"No customer document with ID '{customerId}' could be found within Cosmos DB");
+                    return null;
+                }
+
+                _logger.LogInformation($"A customer document with ID '{customerId}' was found within Cosmos DB");
+                _logger.LogInformation("Processing complete");
+
+                return new Customer { CustomerId = customerId };
+            }
+        }
     }
 }

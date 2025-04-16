@@ -50,10 +50,11 @@ namespace NCS.DSS.DataUtility.Function
                 int subscriptionDocCount = await _cosmosDatabaseService.PurgeSubscriptionsForCustomerAsync(queueBody.CustomerId);
                 int transferDocCount = await _cosmosDatabaseService.PurgeTransfersForCustomerAsync(queueBody.CustomerId);
                 int webchatDocCount = await _cosmosDatabaseService.PurgeWebchatsForCustomerAsync(queueBody.CustomerId);
+                int customerDocCount = await _cosmosDatabaseService.PurgeCustomerRecordAsync(queueBody.CustomerId);
 
                 int totalDocumentCount = TotalCounter(actionPlanDocCount, actionDocCount, addressDocCount, contactDetailDocCount, digitalIdentityDocCount,
                     diversityDetailDocCount, employmentProgressionDocCount, goalDocCount, learningProgressionDocCount, outcomeDocCount, sessionDocCount,
-                    subscriptionDocCount, transferDocCount, webchatDocCount);
+                    subscriptionDocCount, transferDocCount, webchatDocCount, customerDocCount);
 
                 _logger.LogInformation($">> All docs for customer '{queueBody.CustomerId.ToString()}' <<");
                 _logger.LogInformation($"- Action Plans: {actionPlanDocCount}");
@@ -70,6 +71,7 @@ namespace NCS.DSS.DataUtility.Function
                 _logger.LogInformation($"- Subscriptions: {subscriptionDocCount}");
                 _logger.LogInformation($"- Transfers: {transferDocCount}");
                 _logger.LogInformation($"- Webchats: {webchatDocCount}");
+                _logger.LogInformation($"- Customer: {customerDocCount}");
                 _logger.LogInformation($">> Grand total : {totalDocumentCount} <<");
 
                 // Complete the message
