@@ -13,10 +13,6 @@ namespace NCS.DSS.DataUtility.Services
         private readonly ILogger<CosmosDatabaseService> _logger;
 
         /*private const string CustomerCosmosDb = "customers";
-        private const string DigitalIdentityCosmosDb = "digitalidentities";
-        private const string DiversityDetailsCosmosDb = "diversitydetails";
-        private const string EmploymentProgressionCosmosDb = "employmentprogressions";
-        private const string GoalsCosmosDb = "goals";
         private const string LearningProgressionCosmosDb = "learningprogressions";
         private const string OutcomesCosmosDb = "outcomes";
         private const string SessionCosmosDb = "sessions";
@@ -57,6 +53,30 @@ namespace NCS.DSS.DataUtility.Services
         {
             Container cosmosDbContainer = _cosmosDbClient.GetContainer("contacts", "contacts");
             List<ContactDetail> contactDetails = await RetrieveContactDetailsForCustomerAsync(customerId, cosmosDbContainer);
+        }
+
+        public async Task PurgeDigitalIdentitiesForCustomerAsync(Guid customerId)
+        {
+            Container cosmosDbContainer = _cosmosDbClient.GetContainer("digitalidentities", "digitalidentities");
+            List<DigitalIdentity> digitalIdentities = await RetrieveDigitalIdentitiesForCustomerAsync(customerId, cosmosDbContainer);
+        }
+
+        public async Task PurgeDiversityDetailsForCustomerAsync(Guid customerId)
+        {
+            Container cosmosDbContainer = _cosmosDbClient.GetContainer("diversitydetails", "diversitydetails");
+            List<DiversityDetail> diversityDetails = await RetrieveDiversityDetailsForCustomerAsync(customerId, cosmosDbContainer);
+        }
+
+        public async Task PurgeEmploymentProgressionsForCustomerAsync(Guid customerId)
+        {
+            Container cosmosDbContainer = _cosmosDbClient.GetContainer("employmentprogressions", "employmentprogressions");
+            List<EmploymentProgression> employmentProgressions = await RetrieveEmploymentProgressionsForCustomerAsync(customerId, cosmosDbContainer);
+        }
+
+        public async Task PurgeGoalsForCustomerAsync(Guid customerId)
+        {
+            Container cosmosDbContainer = _cosmosDbClient.GetContainer("goals", "goals");
+            List<Goal> goals = await RetrieveGoalsForCustomerAsync(customerId, cosmosDbContainer);
         }
 
         // private helper methods
@@ -189,5 +209,125 @@ namespace NCS.DSS.DataUtility.Services
                 return contactDetailList;
             }
         }
+
+        private async Task<List<DigitalIdentity>> RetrieveDigitalIdentitiesForCustomerAsync(Guid customerId, Container cosmosDbContainer)
+        {
+            _logger.LogInformation($"Method '{nameof(RetrieveDigitalIdentitiesForCustomerAsync)}' has been invoked");
+
+            List<DigitalIdentity> digitalIdentityList = new List<DigitalIdentity>();
+
+            _logger.LogInformation($"Attempting to retrieve all Digital Identity documents with CustomerId '{customerId}' from Cosmos DB");
+
+            using (FeedIterator<DigitalIdentity> setIterator = cosmosDbContainer
+                .GetItemLinqQueryable<DigitalIdentity>()
+                .Where(digitalIdentity => digitalIdentity.CustomerId == customerId)
+                .ToFeedIterator()
+            )
+            {
+                while (setIterator.HasMoreResults)
+                {
+                    foreach (DigitalIdentity digitalIdentity in await setIterator.ReadNextAsync())
+                    {
+                        digitalIdentityList.Add(digitalIdentity);
+                    }
+                }
+
+                _logger.LogInformation($"Processing complete. '{digitalIdentityList.Count().ToString()}' document(s) matching the criteria have been retrieved");
+
+                return digitalIdentityList;
+            }
+        }
+
+        private async Task<List<DiversityDetail>> RetrieveDiversityDetailsForCustomerAsync(Guid customerId, Container cosmosDbContainer)
+        {
+            _logger.LogInformation($"Method '{nameof(RetrieveDiversityDetailsForCustomerAsync)}' has been invoked");
+
+            List<DiversityDetail> diversityDetailList = new List<DiversityDetail>();
+
+            _logger.LogInformation($"Attempting to retrieve all Diversity Detail documents with CustomerId '{customerId}' from Cosmos DB");
+
+            using (FeedIterator<DiversityDetail> setIterator = cosmosDbContainer
+                .GetItemLinqQueryable<DiversityDetail>()
+                .Where(diversityDetail => diversityDetail.CustomerId == customerId)
+                .ToFeedIterator()
+            )
+            {
+                while (setIterator.HasMoreResults)
+                {
+                    foreach (DiversityDetail diversityDetail in await setIterator.ReadNextAsync())
+                    {
+                        diversityDetailList.Add(diversityDetail);
+                    }
+                }
+
+                _logger.LogInformation($"Processing complete. '{diversityDetailList.Count().ToString()}' document(s) matching the criteria have been retrieved");
+
+                return diversityDetailList;
+            }
+        }
+
+        private async Task<List<EmploymentProgression>> RetrieveEmploymentProgressionsForCustomerAsync(Guid customerId, Container cosmosDbContainer)
+        {
+            _logger.LogInformation($"Method '{nameof(RetrieveEmploymentProgressionsForCustomerAsync)}' has been invoked");
+
+            List<EmploymentProgression> employmentProgressionList = new List<EmploymentProgression>();
+
+            _logger.LogInformation($"Attempting to retrieve all Employment Progression documents with CustomerId '{customerId}' from Cosmos DB");
+
+            using (FeedIterator<EmploymentProgression> setIterator = cosmosDbContainer
+                .GetItemLinqQueryable<EmploymentProgression>()
+                .Where(employmentProgression => employmentProgression.CustomerId == customerId)
+                .ToFeedIterator()
+            )
+            {
+                while (setIterator.HasMoreResults)
+                {
+                    foreach (EmploymentProgression employmentProgression in await setIterator.ReadNextAsync())
+                    {
+                        employmentProgressionList.Add(employmentProgression);
+                    }
+                }
+
+                _logger.LogInformation($"Processing complete. '{employmentProgressionList.Count().ToString()}' document(s) matching the criteria have been retrieved");
+
+                return employmentProgressionList;
+            }
+        }
+
+        private async Task<List<Goal>> RetrieveGoalsForCustomerAsync(Guid customerId, Container cosmosDbContainer)
+        {
+            _logger.LogInformation($"Method '{nameof(RetrieveGoalsForCustomerAsync)}' has been invoked");
+
+            List<Goal> goalList = new List<Goal>();
+
+            _logger.LogInformation($"Attempting to retrieve all Goal documents with CustomerId '{customerId}' from Cosmos DB");
+
+            using (FeedIterator<Goal> setIterator = cosmosDbContainer
+                .GetItemLinqQueryable<Goal>()
+                .Where(goal => goal.CustomerId == customerId)
+                .ToFeedIterator()
+            )
+            {
+                while (setIterator.HasMoreResults)
+                {
+                    foreach (Goal goal in await setIterator.ReadNextAsync())
+                    {
+                        goalList.Add(goal);
+                    }
+                }
+
+                _logger.LogInformation($"Processing complete. '{goalList.Count().ToString()}' document(s) matching the criteria have been retrieved");
+
+                return goalList;
+            }
+        }
+
+        /*private const string CustomerCosmosDb = "customers";
+       private const string LearningProgressionCosmosDb = "learningprogressions";
+       private const string OutcomesCosmosDb = "outcomes";
+       private const string SessionCosmosDb = "sessions";
+       private const string SubscriptionsCosmosDb = "subscriptions";
+       private const string TransferCosmosDb = "transfers";
+       private const string WebchatsCosmosDb = "webchats";*/
     }
 }

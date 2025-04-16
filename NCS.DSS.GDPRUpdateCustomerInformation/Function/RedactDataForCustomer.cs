@@ -39,6 +39,10 @@ namespace NCS.DSS.DataUtility.Function
                 await _cosmosDatabaseService.PurgeActionsForCustomerAsync(queueBody.CustomerId);
                 await _cosmosDatabaseService.PurgeAddressesForCustomerAsync(queueBody.CustomerId);
                 await _cosmosDatabaseService.PurgeContactDetailsForCustomerAsync(queueBody.CustomerId);
+                await _cosmosDatabaseService.PurgeDigitalIdentitiesForCustomerAsync(queueBody.CustomerId);
+                await _cosmosDatabaseService.PurgeDiversityDetailsForCustomerAsync(queueBody.CustomerId);
+                await _cosmosDatabaseService.PurgeEmploymentProgressionsForCustomerAsync(queueBody.CustomerId);
+                await _cosmosDatabaseService.PurgeGoalsForCustomerAsync(queueBody.CustomerId);
 
                 // Complete the message
                 await messageActions.CompleteMessageAsync(message);

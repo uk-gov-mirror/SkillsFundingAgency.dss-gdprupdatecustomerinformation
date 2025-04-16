@@ -9,5 +9,13 @@
         Task PurgeAddressesForCustomerAsync(Guid customerId);
         
         Task PurgeContactDetailsForCustomerAsync(Guid customerId);
+
+        Task PurgeDigitalIdentitiesForCustomerAsync(Guid customerId);
+
+        Task PurgeDiversityDetailsForCustomerAsync(Guid customerId);
+
+        Task PurgeEmploymentProgressionsForCustomerAsync(Guid customerId);
+
+        Task PurgeGoalsForCustomerAsync(Guid customerId);
     }
 }
