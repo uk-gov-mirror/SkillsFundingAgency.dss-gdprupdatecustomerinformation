@@ -17,5 +17,11 @@
         Task<int> PurgeEmploymentProgressionsForCustomerAsync(Guid customerId);
 
         Task<int> PurgeGoalsForCustomerAsync(Guid customerId);
+
+        Task<int> PurgeLearningProgressionsForCustomerAsync(Guid customerId);
+
+        Task<int> PurgeOutcomesForCustomerAsync(Guid customerId);
+
+        Task<int> PurgeSessionsForCustomerAsync(Guid customerId);
     }
 }

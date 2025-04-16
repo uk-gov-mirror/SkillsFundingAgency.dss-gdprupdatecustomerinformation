@@ -43,9 +43,12 @@ namespace NCS.DSS.DataUtility.Function
                 int diversityDetailDocCount = await _cosmosDatabaseService.PurgeDiversityDetailsForCustomerAsync(queueBody.CustomerId);
                 int employmentProgressionDocCount = await _cosmosDatabaseService.PurgeEmploymentProgressionsForCustomerAsync(queueBody.CustomerId);
                 int goalDocCount = await _cosmosDatabaseService.PurgeGoalsForCustomerAsync(queueBody.CustomerId);
+                int learningProgressionDocCount = await _cosmosDatabaseService.PurgeLearningProgressionsForCustomerAsync(queueBody.CustomerId);
+                int outcomeDocCount = await _cosmosDatabaseService.PurgeOutcomesForCustomerAsync(queueBody.CustomerId);
+                int sessionDocCount = await _cosmosDatabaseService.PurgeSessionsForCustomerAsync(queueBody.CustomerId);
 
                 int totalDocumentCount = TotalCounter(actionPlanDocCount, actionDocCount, addressDocCount, contactDetailDocCount, digitalIdentityDocCount,
-                    diversityDetailDocCount, employmentProgressionDocCount, goalDocCount);
+                    diversityDetailDocCount, employmentProgressionDocCount, goalDocCount, learningProgressionDocCount, outcomeDocCount, sessionDocCount);
 
                 _logger.LogInformation($">> All docs for customer '{queueBody.CustomerId.ToString()}' <<");
                 _logger.LogInformation($"- Action Plans: {actionPlanDocCount}");
@@ -56,6 +59,9 @@ namespace NCS.DSS.DataUtility.Function
                 _logger.LogInformation($"- Diversity Details: {diversityDetailDocCount}");
                 _logger.LogInformation($"- Employment Progressions: {employmentProgressionDocCount}");
                 _logger.LogInformation($"- Goals: {goalDocCount}");
+                _logger.LogInformation($"- Learning Progressions: {learningProgressionDocCount}");
+                _logger.LogInformation($"- Outcomes: {outcomeDocCount}");
+                _logger.LogInformation($"- Sessions: {sessionDocCount}");
                 _logger.LogInformation($">> Grand total : {totalDocumentCount} <<");
 
                 // Complete the message

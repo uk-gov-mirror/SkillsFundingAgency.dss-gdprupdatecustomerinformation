@@ -13,9 +13,6 @@ namespace NCS.DSS.DataUtility.Services
         private readonly ILogger<CosmosDatabaseService> _logger;
 
         /*private const string CustomerCosmosDb = "customers";
-        private const string LearningProgressionCosmosDb = "learningprogressions";
-        private const string OutcomesCosmosDb = "outcomes";
-        private const string SessionCosmosDb = "sessions";
         private const string SubscriptionsCosmosDb = "subscriptions";
         private const string TransferCosmosDb = "transfers";
         private const string WebchatsCosmosDb = "webchats";*/
@@ -93,6 +90,30 @@ namespace NCS.DSS.DataUtility.Services
             List<Goal> goals = await RetrieveGoalsForCustomerAsync(customerId, cosmosDbContainer);
 
             return goals.Count();
+        }
+
+        public async Task<int> PurgeLearningProgressionsForCustomerAsync(Guid customerId)
+        {
+            Container cosmosDbContainer = _cosmosDbClient.GetContainer("learningprogressions", "learningprogressions");
+            List<LearningProgression> learningProgressions = await RetrieveLearningProgressionsForCustomerAsync(customerId, cosmosDbContainer);
+
+            return learningProgressions.Count();
+        }
+
+        public async Task<int> PurgeOutcomesForCustomerAsync(Guid customerId)
+        {
+            Container cosmosDbContainer = _cosmosDbClient.GetContainer("outcomes", "outcomes");
+            List<Outcome> outcomes = await RetrieveOutcomesForCustomerAsync(customerId, cosmosDbContainer);
+
+            return outcomes.Count();
+        }
+
+        public async Task<int> PurgeSessionsForCustomerAsync(Guid customerId)
+        {
+            Container cosmosDbContainer = _cosmosDbClient.GetContainer("sessions", "sessions");
+            List<Session> sessions = await RetrieveSessionsForCustomerAsync(customerId, cosmosDbContainer);
+
+            return sessions.Count();
         }
 
         // private helper methods
@@ -330,10 +351,88 @@ namespace NCS.DSS.DataUtility.Services
             }
         }
 
+        private async Task<List<LearningProgression>> RetrieveLearningProgressionsForCustomerAsync(Guid customerId, Container cosmosDbContainer)
+        {
+            _logger.LogInformation($"Method '{nameof(RetrieveLearningProgressionsForCustomerAsync)}' has been invoked");
+
+            List<LearningProgression> learningProgressionList = new List<LearningProgression>();
+
+            _logger.LogInformation($"Attempting to retrieve all Learning Progression documents with CustomerId '{customerId}' from Cosmos DB");
+
+            using (FeedIterator<LearningProgression> setIterator = cosmosDbContainer
+                .GetItemLinqQueryable<LearningProgression>()
+                .Where(learningProgression => learningProgression.CustomerId == customerId)
+                .ToFeedIterator()
+            )
+            {
+                while (setIterator.HasMoreResults)
+                {
+                    foreach (LearningProgression learningProgression in await setIterator.ReadNextAsync())
+                    {
+                        learningProgressionList.Add(learningProgression);
+                    }
+                }
+
+                _logger.LogInformation("Processing complete");
+                return learningProgressionList;
+            }
+        }
+
+        private async Task<List<Outcome>> RetrieveOutcomesForCustomerAsync(Guid customerId, Container cosmosDbContainer)
+        {
+            _logger.LogInformation($"Method '{nameof(RetrieveOutcomesForCustomerAsync)}' has been invoked");
+
+            List<Outcome> outcomeList = new List<Outcome>();
+
+            _logger.LogInformation($"Attempting to retrieve all Outcome documents with CustomerId '{customerId}' from Cosmos DB");
+
+            using (FeedIterator<Outcome> setIterator = cosmosDbContainer
+                .GetItemLinqQueryable<Outcome>()
+                .Where(outcome => outcome.CustomerId == customerId)
+                .ToFeedIterator()
+            )
+            {
+                while (setIterator.HasMoreResults)
+                {
+                    foreach (Outcome outcome in await setIterator.ReadNextAsync())
+                    {
+                        outcomeList.Add(outcome);
+                    }
+                }
+
+                _logger.LogInformation("Processing complete");
+                return outcomeList;
+            }
+        }
+
+        private async Task<List<Session>> RetrieveSessionsForCustomerAsync(Guid customerId, Container cosmosDbContainer)
+        {
+            _logger.LogInformation($"Method '{nameof(RetrieveSessionsForCustomerAsync)}' has been invoked");
+
+            List<Session> sessionList = new List<Session>();
+
+            _logger.LogInformation($"Attempting to retrieve all Session documents with CustomerId '{customerId}' from Cosmos DB");
+
+            using (FeedIterator<Session> setIterator = cosmosDbContainer
+                .GetItemLinqQueryable<Session>()
+                .Where(session => session.CustomerId == customerId)
+                .ToFeedIterator()
+            )
+            {
+                while (setIterator.HasMoreResults)
+                {
+                    foreach (Session session in await setIterator.ReadNextAsync())
+                    {
+                        sessionList.Add(session);
+                    }
+                }
+
+                _logger.LogInformation("Processing complete");
+                return sessionList;
+            }
+        }
+
         /*private const string CustomerCosmosDb = "customers";
-       private const string LearningProgressionCosmosDb = "learningprogressions";
-       private const string OutcomesCosmosDb = "outcomes";
-       private const string SessionCosmosDb = "sessions";
        private const string SubscriptionsCosmosDb = "subscriptions";
        private const string TransferCosmosDb = "transfers";
        private const string WebchatsCosmosDb = "webchats";*/
