@@ -69,7 +69,8 @@
         "GDPRUpdateCustomersStoredProcedureName": "[parameters('GDPRUpdateCustomersStoredProcedureName')]",
         "ServiceBusConnectionString": "[format('@Microsoft.KeyVault(VaultName={0};SecretName=ServiceBusConnectionString)', parameters('keyVaultName'))]",
         "GdprPurgeQueueName": "RedactCustomer",
-        "GdprPurgeTimerSchedule": "*/15 * * * *"
+        "GdprPurgeTimerSchedule": "*/15 * * * *",
+        "AzureWebJobs.RetrieveCustomersToBeDeleted.Disabled": true
       },
       "copy": {
         "name": "FunctionAppSettingsCopy",
