@@ -25,16 +25,16 @@ namespace NCS.DSS.DataUtility.Function
 
             try
             {
-                _logger.LogInformation("Retrieving list of customer IDs which require redaction");
+                _logger.LogInformation("Retrieving list of customer IDs which require deletion");
                 List<Guid> customerIds = await _sqlDbService.RetrieveCustomerIdsAsync();
 
                 if (customerIds.Count == 0)
                 {
-                    _logger.LogInformation("No customers to be redacted (data is already compliant)");
+                    _logger.LogInformation("No customers to be deleted (data is already GDPR compliant)");
                     return;
                 }
 
-                _logger.LogInformation($"A total of '{customerIds.Count.ToString()}' customers have been identified as requiring redaction");
+                _logger.LogInformation($"A total of '{customerIds.Count.ToString()}' customers have been identified as requiring deletion");
 
                 _logger.LogInformation("Sending each customer ID onto a service bus queue for processing");
 

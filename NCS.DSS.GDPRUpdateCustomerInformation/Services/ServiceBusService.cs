@@ -9,7 +9,7 @@ namespace NCS.DSS.DataUtility.Services
     {
         private readonly ILogger<ServiceBusService> _logger;
         private readonly ServiceBusSender _serviceBusSender;
-        private readonly string QueueName = Environment.GetEnvironmentVariable("RedactionQueueName");
+        private readonly string QueueName = Environment.GetEnvironmentVariable("GdprPurgeQueueName");
 
         public ServiceBusService(ILogger<ServiceBusService> logger, ServiceBusClient serviceBusClient)
         {
