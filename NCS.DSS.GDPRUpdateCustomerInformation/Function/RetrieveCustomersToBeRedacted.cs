@@ -40,7 +40,7 @@ namespace NCS.DSS.DataUtility.Function
 
                 foreach (var customerId in customerIds)
                 {
-                    RedactionQueueMessage message = new RedactionQueueMessage
+                    DeleteCustomerQueueMessage message = new DeleteCustomerQueueMessage
                     {
                         CustomerId = customerId
                     };
