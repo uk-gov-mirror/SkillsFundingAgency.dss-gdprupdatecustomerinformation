@@ -23,10 +23,10 @@ namespace NCS.DSS.DataUtility.Services
             Container cosmosDbContainer = _cosmosDbClient.GetContainer("actionplans", "actionplans");
             List<ActionPlan> actionPlans = await RetrieveActionPlansForCustomerAsync(customerId, cosmosDbContainer);
 
-            /*foreach (var actionPlan in actionPlans)
+            foreach (var actionPlan in actionPlans)
             {
-                bool success = await DeleteCosmosDocumentAsync(actionPlan.ActionPlanId.ToString(), cosmosDbContainer);
-            }*/
+                await DeleteCosmosDocumentAsync(actionPlan.ActionPlanId.ToString(), cosmosDbContainer);
+            }
 
             return actionPlans.Count();
         }
@@ -36,6 +36,11 @@ namespace NCS.DSS.DataUtility.Services
             Container cosmosDbContainer = _cosmosDbClient.GetContainer("actions", "actions");
             List<Action> actions = await RetrieveActionsForCustomerAsync(customerId, cosmosDbContainer);
 
+            foreach (var action in actions)
+            {
+                await DeleteCosmosDocumentAsync(action.ActionId.ToString(), cosmosDbContainer);
+            }
+
             return actions.Count();
         }
 
@@ -43,6 +48,11 @@ namespace NCS.DSS.DataUtility.Services
         {
             Container cosmosDbContainer = _cosmosDbClient.GetContainer("addresses", "addresses");
             List<Address> addresses = await RetrieveAddressesForCustomerAsync(customerId, cosmosDbContainer);
+
+            foreach (var address in addresses)
+            {
+                await DeleteCosmosDocumentAsync(address.AddressId.ToString(), cosmosDbContainer);
+            }
 
             return addresses.Count();
         }
@@ -52,6 +62,11 @@ namespace NCS.DSS.DataUtility.Services
             Container cosmosDbContainer = _cosmosDbClient.GetContainer("contacts", "contacts");
             List<ContactDetail> contactDetails = await RetrieveContactDetailsForCustomerAsync(customerId, cosmosDbContainer);
 
+            foreach (var contactDetail in contactDetails)
+            {
+                await DeleteCosmosDocumentAsync(contactDetail.ContactId.ToString(), cosmosDbContainer);
+            }
+
             return contactDetails.Count();
         }
 
@@ -59,6 +74,11 @@ namespace NCS.DSS.DataUtility.Services
         {
             Container cosmosDbContainer = _cosmosDbClient.GetContainer("digitalidentities", "digitalidentities");
             List<DigitalIdentity> digitalIdentities = await RetrieveDigitalIdentitiesForCustomerAsync(customerId, cosmosDbContainer);
+
+            foreach (var digitalIdentity in digitalIdentities)
+            {
+                await DeleteCosmosDocumentAsync(digitalIdentity.IdentityID.ToString(), cosmosDbContainer);
+            }
 
             return digitalIdentities.Count();
         }
@@ -68,6 +88,11 @@ namespace NCS.DSS.DataUtility.Services
             Container cosmosDbContainer = _cosmosDbClient.GetContainer("diversitydetails", "diversitydetails");
             List<DiversityDetail> diversityDetails = await RetrieveDiversityDetailsForCustomerAsync(customerId, cosmosDbContainer);
 
+            foreach (var diversityDetail in diversityDetails)
+            {
+                await DeleteCosmosDocumentAsync(diversityDetail.DiversityId.ToString(), cosmosDbContainer);
+            }
+
             return diversityDetails.Count();
         }
 
@@ -75,6 +100,11 @@ namespace NCS.DSS.DataUtility.Services
         {
             Container cosmosDbContainer = _cosmosDbClient.GetContainer("employmentprogressions", "employmentprogressions");
             List<EmploymentProgression> employmentProgressions = await RetrieveEmploymentProgressionsForCustomerAsync(customerId, cosmosDbContainer);
+
+            foreach (var employmentProgression in employmentProgressions)
+            {
+                await DeleteCosmosDocumentAsync(employmentProgression.EmploymentProgressionId.ToString(), cosmosDbContainer);
+            }
 
             return employmentProgressions.Count();
         }
@@ -84,6 +114,11 @@ namespace NCS.DSS.DataUtility.Services
             Container cosmosDbContainer = _cosmosDbClient.GetContainer("goals", "goals");
             List<Goal> goals = await RetrieveGoalsForCustomerAsync(customerId, cosmosDbContainer);
 
+            foreach (var goal in goals)
+            {
+                await DeleteCosmosDocumentAsync(goal.GoalId.ToString(), cosmosDbContainer);
+            }
+
             return goals.Count();
         }
 
@@ -91,6 +126,11 @@ namespace NCS.DSS.DataUtility.Services
         {
             Container cosmosDbContainer = _cosmosDbClient.GetContainer("learningprogressions", "learningprogressions");
             List<LearningProgression> learningProgressions = await RetrieveLearningProgressionsForCustomerAsync(customerId, cosmosDbContainer);
+
+            foreach (var learningProgression in learningProgressions)
+            {
+                await DeleteCosmosDocumentAsync(learningProgression.LearningProgressionId.ToString(), cosmosDbContainer);
+            }
 
             return learningProgressions.Count();
         }
@@ -100,6 +140,11 @@ namespace NCS.DSS.DataUtility.Services
             Container cosmosDbContainer = _cosmosDbClient.GetContainer("outcomes", "outcomes");
             List<Outcome> outcomes = await RetrieveOutcomesForCustomerAsync(customerId, cosmosDbContainer);
 
+            foreach (var outcome in outcomes)
+            {
+                await DeleteCosmosDocumentAsync(outcome.OutcomeId.ToString(), cosmosDbContainer);
+            }
+
             return outcomes.Count();
         }
 
@@ -107,6 +152,11 @@ namespace NCS.DSS.DataUtility.Services
         {
             Container cosmosDbContainer = _cosmosDbClient.GetContainer("sessions", "sessions");
             List<Session> sessions = await RetrieveSessionsForCustomerAsync(customerId, cosmosDbContainer);
+
+            foreach (var session in sessions)
+            {
+                await DeleteCosmosDocumentAsync(session.SessionId.ToString(), cosmosDbContainer);
+            }
 
             return sessions.Count();
         }
@@ -116,6 +166,11 @@ namespace NCS.DSS.DataUtility.Services
             Container cosmosDbContainer = _cosmosDbClient.GetContainer("subscriptions", "subscriptions");
             List<Subscription> subscriptions = await RetrieveSubscriptionsForCustomerAsync(customerId, cosmosDbContainer);
 
+            foreach (var subscription in subscriptions)
+            {
+                await DeleteCosmosDocumentAsync(subscription.SubscriptionId.ToString(), cosmosDbContainer);
+            }
+
             return subscriptions.Count();
         }
 
@@ -123,6 +178,11 @@ namespace NCS.DSS.DataUtility.Services
         {
             Container cosmosDbContainer = _cosmosDbClient.GetContainer("transfers", "transfers");
             List<Transfer> transfers = await RetrieveTransferForCustomerAsync(customerId, cosmosDbContainer);
+
+            foreach (var transfer in transfers)
+            {
+                await DeleteCosmosDocumentAsync(transfer.TransferId.ToString(), cosmosDbContainer);
+            }
 
             return transfers.Count();
         }
@@ -132,6 +192,11 @@ namespace NCS.DSS.DataUtility.Services
             Container cosmosDbContainer = _cosmosDbClient.GetContainer("webchats", "webchats");
             List<Webchat> webchats = await RetrieveWebchatsForCustomerAsync(customerId, cosmosDbContainer);
 
+            foreach (var webchat in webchats)
+            {
+                await DeleteCosmosDocumentAsync(webchat.WebChatId.ToString(), cosmosDbContainer);
+            }
+
             return webchats.Count();
         }
 
@@ -139,6 +204,8 @@ namespace NCS.DSS.DataUtility.Services
         {
             Container cosmosDbContainer = _cosmosDbClient.GetContainer("customers", "customers");
             Customer customer = await RetrieveCustomerRecordAsync(customerId, cosmosDbContainer);
+
+            await DeleteCosmosDocumentAsync(customer.CustomerId.ToString(), cosmosDbContainer);
 
             return customer == null ? 0 : 1;
         }
@@ -206,7 +273,7 @@ namespace NCS.DSS.DataUtility.Services
 
         // private helper methods
 
-        private async Task<bool> DeleteCosmosDocumentAsync(string documentId, Container cosmosDbContainer)
+        private async Task DeleteCosmosDocumentAsync(string documentId, Container cosmosDbContainer)
         {
             using (ResponseMessage response = await cosmosDbContainer.DeleteItemStreamAsync(documentId, PartitionKey.None))
             {
@@ -215,11 +282,10 @@ namespace NCS.DSS.DataUtility.Services
                 if (!response.IsSuccessStatusCode)
                 {
                     _logger.LogWarning($"Document with ID '{documentId}' was not deleted from Cosmos DB");
-                    return false;
+                    // throw exception?
                 }
 
                 _logger.LogInformation($"Document with ID '{documentId}' was successfully deleted from Cosmos DB");
-                return true;
             }
         }
 
