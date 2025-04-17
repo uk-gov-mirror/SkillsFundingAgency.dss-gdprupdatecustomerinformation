@@ -68,8 +68,8 @@
         "GDPRIdentifyCustomersStoredProcedureName": "[parameters('GDPRIdentifyCustomersStoredProcedureName')]",
         "GDPRUpdateCustomersStoredProcedureName": "[parameters('GDPRUpdateCustomersStoredProcedureName')]",
         "ServiceBusConnectionString": "[format('@Microsoft.KeyVault(VaultName={0};SecretName=ServiceBusConnectionString)', parameters('keyVaultName'))]",
-        "RedactionQueueName": "RedactCustomer",
-        "RedactionTimerSchedule": "*/15 * * * *"
+        "GdprPurgeQueueName": "RedactCustomer",
+        "GdprPurgeTimerSchedule": "*/15 * * * *"
       },
       "copy": {
         "name": "FunctionAppSettingsCopy",

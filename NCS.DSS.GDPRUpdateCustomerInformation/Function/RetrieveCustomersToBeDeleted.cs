@@ -5,23 +5,23 @@ using NCS.DSS.DataUtility.Models;
 
 namespace NCS.DSS.DataUtility.Function
 {
-    public class RetrieveCustomersToBeRedacted
+    public class RetrieveCustomersToBeDeleted
     {
-        private readonly ILogger<RetrieveCustomersToBeRedacted> _logger;
+        private readonly ILogger<RetrieveCustomersToBeDeleted> _logger;
         private readonly ISqlDbService _sqlDbService;
         private readonly IServiceBusService _serviceBusService;
 
-        public RetrieveCustomersToBeRedacted(ILogger<RetrieveCustomersToBeRedacted> logger, ISqlDbService sqlDbService, IServiceBusService serviceBusService)
+        public RetrieveCustomersToBeDeleted(ILogger<RetrieveCustomersToBeDeleted> logger, ISqlDbService sqlDbService, IServiceBusService serviceBusService)
         {
             _logger = logger;
             _sqlDbService = sqlDbService;
             _serviceBusService = serviceBusService;
         }
 
-        [Function(nameof(RetrieveCustomersToBeRedacted))]
-        public async Task Run([TimerTrigger("%RedactionTimerSchedule%")] TimerInfo timer)
+        [Function(nameof(RetrieveCustomersToBeDeleted))]
+        public async Task Run([TimerTrigger("%GdprPurgeTimerSchedule%")] TimerInfo timer)
         {
-            _logger.LogInformation($"Function '{nameof(RetrieveCustomersToBeRedacted)}' has been invoked");
+            _logger.LogInformation($"Function '{nameof(RetrieveCustomersToBeDeleted)}' has been invoked");
 
             try
             {
@@ -50,11 +50,11 @@ namespace NCS.DSS.DataUtility.Function
             }
             catch (Exception ex)
             {
-                _logger.LogError($"INVOCATION ERROR ({nameof(RetrieveCustomersToBeRedacted)}): function has failed with exception: {ex}");
+                _logger.LogError($"INVOCATION ERROR ({nameof(RetrieveCustomersToBeDeleted)}): function has failed with exception: {ex}");
                 throw;
             }
 
-            _logger.LogInformation($"Function '{nameof(RetrieveCustomersToBeRedacted)}' has finished invocation");
+            _logger.LogInformation($"Function '{nameof(RetrieveCustomersToBeDeleted)}' has finished invocation");
         }
     }
 }
