@@ -31,5 +31,7 @@
         Task<int> PurgeWebchatsForCustomerAsync(Guid customerId);
 
         Task<int> PurgeCustomerRecordAsync(Guid customerId);
+
+        Task DeleteGenericRecordsFromContainer(string databaseName, string containerName, string field, string value, bool int_bool);
     }
 }

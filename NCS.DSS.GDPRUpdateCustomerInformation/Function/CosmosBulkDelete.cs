@@ -2,19 +2,19 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
-using NCS.DSS.DataUtility.Services;
+using NCS.DSS.DataUtility.Interfaces;
 using Newtonsoft.Json;
 
 namespace NCS.DSS.DataUtility.Function
 {
     public class CosmosBulkDelete
     {
-        private readonly IGenericDataService _genericDataService;
+        private readonly ICosmosDatabaseService _cosmosDatabaseService;
         private readonly ILogger<CosmosBulkDelete> _logger;
 
-        public CosmosBulkDelete(IGenericDataService genericDataService, ILogger<CosmosBulkDelete> logger)
+        public CosmosBulkDelete(ICosmosDatabaseService cosmosDatabaseService, ILogger<CosmosBulkDelete> logger)
         {
-            _genericDataService = genericDataService;
+            _cosmosDatabaseService = cosmosDatabaseService;
             _logger = logger;
         }
 
@@ -48,8 +48,25 @@ namespace NCS.DSS.DataUtility.Function
                     $"int-values (optional): {int_bool}\n" +
                     $"sql-delete (optional): {sql_bool}");
 
-                await _genericDataService.DeleteFromCosmos(database, container, field, values, int_bool, sql_bool);
+                if (values != null)
+                {
+                    int next = 1;
+                    foreach (string value in values)
+                    {
+                        _logger.LogInformation($"Looking at value number {next} of {values?.Count}...");
 
+                        _logger.LogInformation($"About to initiate Cosmos delete on record(s) with '{field}' value: {value}");
+                        await _cosmosDatabaseService.DeleteGenericRecordsFromContainer(database, container, field, value, int_bool);
+
+                        if (sql_bool)
+                        {
+                            _logger.LogInformation($"About to initiate SQL delete on record(s) with: '{field}' value: {value}");
+                            throw new NotImplementedException();
+                        }
+                        next++;
+                    }
+                }
+                
                 _logger.LogInformation($"{nameof(CosmosBulkDelete)} has finished invocation successfully");
 
                 return new OkResult();

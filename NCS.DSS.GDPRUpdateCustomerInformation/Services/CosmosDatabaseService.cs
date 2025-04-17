@@ -143,6 +143,67 @@ namespace NCS.DSS.DataUtility.Services
             return customer == null ? 0 : 1;
         }
 
+        // Used by the Cosmos Bulk Delete function
+        public async Task DeleteGenericRecordsFromContainer(string databaseName, string containerName, string field, string value, bool int_bool)
+        {
+            _logger.LogInformation($"Attempting to retrieve Cosmos records/documents with value '{value}' for field '{field}' from container '{containerName}' from within database '{databaseName}'");
+
+            Container cosmosDbContainer = _cosmosDbClient.GetContainer(databaseName, containerName);
+
+            // handles string/int parsing based on the int_bool flag
+            string queryString;
+            if (int_bool)
+            {
+                queryString = $"SELECT * FROM c WHERE c.{field} = {value}";
+            }
+            else
+            {
+                queryString = $"SELECT * FROM c WHERE c.{field} = @value";
+            }
+
+            QueryDefinition queryDefinition = new QueryDefinition(queryString).WithParameter("@value", value);
+
+            FeedIterator<dynamic> resultSet = cosmosDbContainer.GetItemQueryIterator<dynamic>(queryDefinition);
+
+            List<string> documentIds = new List<string>();
+
+            while (resultSet.HasMoreResults)
+            {
+                FeedResponse<dynamic> documentRetrievalRequest = await resultSet.ReadNextAsync();
+                foreach (var document in documentRetrievalRequest)
+                {
+                    documentIds.Add(Convert.ToString(document.id));
+                }
+            }
+
+            if (documentIds.Count > 0)
+            {
+                _logger.LogInformation($"Container '{containerName}' has a total of {documentIds.Count.ToString()} matching records/documents");
+                int totalDeleted = 0;
+
+                foreach (var documentId in documentIds)
+                {
+                    using (ResponseMessage deleteRequestResponse = await cosmosDbContainer.DeleteItemStreamAsync(documentId, PartitionKey.None))
+                    {
+                        if (!deleteRequestResponse.IsSuccessStatusCode)
+                        {
+                            _logger.LogWarning($"Failed to delete Cosmos record/document with documentId: '{documentId}'. Response code: {deleteRequestResponse.StatusCode.ToString()}. Error: {deleteRequestResponse.ErrorMessage}");
+                        }
+                        else
+                        {
+                            totalDeleted++;
+                        }
+                    }
+                }
+
+                _logger.LogInformation($"{totalDeleted.ToString()} / {documentIds.Count.ToString()} '{containerName}' records/documents have been deleted successfully");
+            }
+            else
+            {
+                _logger.LogWarning($"No Cosmos records/documents with value '{value}' for field '{field}' were found");
+            }
+        }
+
         // private helper methods
 
         private async Task<bool> DeleteCosmosDocumentAsync(string documentId, Container cosmosDbContainer)

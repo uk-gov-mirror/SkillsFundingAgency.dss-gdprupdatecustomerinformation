@@ -1,13 +1,12 @@
 using FakeItEasy;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
-using NCS.DSS.DataUtility.Services;
 
 namespace NCS.DSS.DataUtility.Tests
 {
     public class GDPRUtilityTests
     {
-        private readonly IIdentifyAndAnonymiseDataService _fakeDataService;
+        /*private readonly IIdentifyAndAnonymiseDataService _fakeDataService;
         private readonly ILogger<Function.GDPRUtility> _fakeLogger;
         private readonly Function.GDPRUtility _function;
 
@@ -47,6 +46,6 @@ namespace NCS.DSS.DataUtility.Tests
             // Assert
             A.CallTo(() => _fakeDataService.AnonymiseData()).MustHaveHappenedOnceExactly();
             A.CallTo(() => _fakeDataService.DeleteCustomersFromCosmos(customerIds)).MustHaveHappenedOnceExactly();
-        }
+        }*/
     }
 }

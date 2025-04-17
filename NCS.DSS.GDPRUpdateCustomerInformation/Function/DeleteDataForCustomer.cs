@@ -32,7 +32,7 @@ namespace NCS.DSS.DataUtility.Function
 
             // convert queue message into usage object
             var bodyText = Encoding.UTF8.GetString(message.Body);
-            RedactionQueueMessage queueBody = JsonConvert.DeserializeObject<RedactionQueueMessage>(bodyText);
+            DeleteCustomerQueueMessage queueBody = JsonConvert.DeserializeObject<DeleteCustomerQueueMessage>(bodyText);
 
             _logger.LogInformation($"Customer with ID '{queueBody.CustomerId.ToString()}' will now be processed");
 

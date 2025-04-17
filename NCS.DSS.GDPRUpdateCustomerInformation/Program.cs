@@ -18,9 +18,6 @@ namespace NCS.DSS.DataUtility
                 services.AddApplicationInsightsTelemetryWorkerService();
                 services.ConfigureFunctionsApplicationInsights();
 
-                services.AddSingleton<ICosmosDBService, CosmosDBService>();
-                services.AddSingleton<IIdentifyAndAnonymiseDataService, IdentifyAndAnonymiseDataService>();
-                services.AddSingleton<IGenericDataService, GenericDataService>();
                 services.AddSingleton<ISqlDbService, SqlDbService>();
                 services.AddSingleton<IServiceBusService, ServiceBusService>();
                 services.AddSingleton<ICosmosDatabaseService, CosmosDatabaseService>();
