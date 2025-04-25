@@ -94,6 +94,26 @@ namespace NCS.DSS.DataUtility.Services
             return (!failureOccurred, contactDetails.Count());
         }
 
+        public async Task<(bool processedSuccessfully, int impactedRecordCount)> PurgeCustomerRecordAsync(Guid customerId)
+        {
+            Container cosmosDbContainer = _cosmosDbClient.GetContainer("customers", "customers");
+            Customer customer = await RetrieveCustomerRecordAsync(customerId, cosmosDbContainer);
+
+            if (customer == null)
+            {
+                return (true, 0); // if the customer doesn't exist in CDB, then this shouldn't constitute a failure
+            }
+
+            bool success = await DeleteCosmosDocumentAsync(customer.CustomerId.ToString(), cosmosDbContainer);
+
+            if (success)
+            {
+                return (true, 1);
+            }
+
+            return (false, 0);
+        }
+
         public async Task<(bool processedSuccessfully, int impactedRecordCount)> PurgeDigitalIdentitiesForCustomerAsync(Guid customerId)
         {
             Container cosmosDbContainer = _cosmosDbClient.GetContainer("digitalidentities", "digitalidentities");
@@ -168,6 +188,25 @@ namespace NCS.DSS.DataUtility.Services
             }
 
             return (!failureOccurred, goals.Count());
+        }
+
+        public async Task<(bool processedSuccessfully, int impactedRecordCount)> PurgeInteractionsForCustomerAsync(Guid customerId)
+        {
+            Container cosmosDbContainer = _cosmosDbClient.GetContainer("interactions", "interactions");
+            List<Interaction> interactions = await RetrieveInteractionsForCustomerAsync(customerId, cosmosDbContainer);
+            bool failureOccurred = false;
+
+            foreach (var interaction in interactions)
+            {
+                bool success = await DeleteCosmosDocumentAsync(interaction.InteractionId.ToString(), cosmosDbContainer);
+
+                if (!success)
+                {
+                    failureOccurred = true;
+                }
+            }
+
+            return (!failureOccurred, interactions.Count());
         }
 
         public async Task<(bool processedSuccessfully, int impactedRecordCount)> PurgeLearningProgressionsForCustomerAsync(Guid customerId)
@@ -282,26 +321,6 @@ namespace NCS.DSS.DataUtility.Services
             }
 
             return (!failureOccurred, webchats.Count());
-        }
-
-        public async Task<(bool processedSuccessfully, int impactedRecordCount)> PurgeCustomerRecordAsync(Guid customerId)
-        {
-            Container cosmosDbContainer = _cosmosDbClient.GetContainer("customers", "customers");
-            Customer customer = await RetrieveCustomerRecordAsync(customerId, cosmosDbContainer);
-
-            if (customer == null)
-            {
-                return (true, 0); // if the customer doesn't exist in CDB, then this shouldn't constitute a failure
-            }
-
-            bool success = await DeleteCosmosDocumentAsync(customer.CustomerId.ToString(), cosmosDbContainer);
-
-            if (success)
-            {
-                return (true, 1);
-            }
-
-            return (false, 0);
         }
 
         // Used by the Cosmos Bulk Delete function
@@ -600,6 +619,33 @@ namespace NCS.DSS.DataUtility.Services
 
                 _logger.LogInformation("Processing complete");
                 return goalList;
+            }
+        }
+
+        private async Task<List<Interaction>> RetrieveInteractionsForCustomerAsync(Guid customerId, Container cosmosDbContainer)
+        {
+            _logger.LogInformation($"Method '{nameof(RetrieveInteractionsForCustomerAsync)}' has been invoked");
+
+            List<Interaction> interactionList = new List<Interaction>();
+
+            _logger.LogInformation($"Attempting to retrieve all Interaction documents with CustomerId '{customerId}' from Cosmos DB");
+
+            using (FeedIterator<Interaction> setIterator = cosmosDbContainer
+                .GetItemLinqQueryable<Interaction>()
+                .Where(interaction => interaction.CustomerId == customerId)
+                .ToFeedIterator()
+            )
+            {
+                while (setIterator.HasMoreResults)
+                {
+                    foreach (Interaction interaction in await setIterator.ReadNextAsync())
+                    {
+                        interactionList.Add(interaction);
+                    }
+                }
+
+                _logger.LogInformation("Processing complete");
+                return interactionList;
             }
         }
 

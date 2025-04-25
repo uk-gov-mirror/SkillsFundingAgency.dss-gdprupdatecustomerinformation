@@ -64,6 +64,13 @@ namespace NCS.DSS.DataUtility.Models
         public Guid? CustomerId { get; set; }
     }
 
+    public class Interaction
+    {
+        [JsonProperty("id")]
+        public Guid? InteractionId { get; set; }
+        public Guid? CustomerId { get; set; }
+    }
+
     public class LearningProgression
     {
         [JsonProperty("id")]
