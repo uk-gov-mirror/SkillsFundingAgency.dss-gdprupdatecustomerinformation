@@ -1,5 +1,6 @@
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
+using System.Globalization;
 
 namespace NCS.DSS.DataUtility.Functions
 {
@@ -15,17 +16,44 @@ namespace NCS.DSS.DataUtility.Functions
         [Function("SetGdprOperatingHours")]
         public void Run([TimerTrigger("*/5 * * * *")] TimerInfo myTimer) // every 5 minutes
         {
-            DateTime today = DateTime.Now;
-            DateTime todayUTC = DateTime.Now.ToUniversalTime();
+            //get the current UTC time
+            DateTime localServerTime = DateTime.UtcNow;
+
+            //Find out if the GMT is in daylight saving time or not.
+            var info = TimeZoneInfo.FindSystemTimeZoneById("GMT Standard Time");
+            var isDaylightSaving = info.IsDaylightSavingTime(localServerTime);
+
+            //set the time to be the local server time
+            var correctDateTime = localServerTime;
+
+            //if the zone is in daylight saving add an hour.
+            if (isDaylightSaving)
+            {
+                correctDateTime = correctDateTime.AddHours(1);
+            }
+
+            //get the UK culture and return the correct date time in the correct format
+            //var culture = new CultureInfo("en-GB");
+            
+            
+            //Console.WriteLine(correctDateTime.ToString(culture));
+
+
+
+
+
+            //DateTime today = DateTime.Now;
+            //DateTime todayUTC = DateTime.Now.ToUniversalTime();
 
             TimeSpan startPause = new TimeSpan(7, 0, 0); // 7 AM
             TimeSpan endPause = new TimeSpan(19, 0, 0); // 7 PM
+            TimeSpan datetimeAsSpan = new TimeSpan(correctDateTime.Ticks);
 
-            _logger.LogInformation($"NOW: {today.ToString()}");
-            _logger.LogInformation($"NOW UTC: {todayUTC.ToString()}");
+            //_logger.LogInformation($"NOW: {today.ToString()}");
+            //_logger.LogInformation($"NOW UTC: {todayUTC.ToString()}");
             _logger.LogInformation($"START TIME: {startPause.ToString()}");
             _logger.LogInformation($"END TIME: {endPause.ToString()}");
-
+            _logger.LogInformation($"CONVERTED TIME: {datetimeAsSpan.ToString()}");
 
             //DateTime currentDateTimeUTC = DateTime.Now.ToUniversalTime();
             //TimeSpan currentTime = DateTime.Now.TimeOfDay;
