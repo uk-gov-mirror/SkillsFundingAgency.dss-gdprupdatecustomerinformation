@@ -70,6 +70,7 @@ namespace NCS.DSS.DataUtility.Services
                      "DELETE FROM [dss-interactions] WHERE CustomerId=@customerId;" +
                      "DELETE FROM [dss-learningprogressions] WHERE CustomerId=@customerId;" +
                      "DELETE FROM [dss-outcomes] WHERE CustomerId=@customerId;" +
+                     "DELETE FROM [dss-prioritygroups] WHERE CustomerId=@customerId;" +
                      "DELETE FROM [dss-sessions] WHERE CustomerId=@customerId;" +
                      "DELETE FROM [dss-subscriptions] WHERE CustomerId=@customerId;" +
                      "DELETE FROM [dss-transfers] WHERE CustomerId=@customerId;" +
@@ -87,6 +88,7 @@ namespace NCS.DSS.DataUtility.Services
                      "DELETE FROM [dss-interactions-history] WHERE CustomerId=@customerId;" +
                      "DELETE FROM [dss-learningprogressions-history] WHERE CustomerId=@customerId;" +
                      "DELETE FROM [dss-outcomes-history] WHERE CustomerId=@customerId;" +
+                     "DELETE FROM [dss-prioritygroups-history] WHERE CustomerId=@customerId;" +
                      "DELETE FROM [dss-sessions-history] WHERE CustomerId=@customerId;" +
                      "DELETE FROM [dss-subscriptions-history] WHERE CustomerId=@customerId;" +
                      "DELETE FROM [dss-transfers-history] WHERE CustomerId=@customerId;" +

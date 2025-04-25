@@ -26,8 +26,6 @@
 
         Task<(bool processedSuccessfully, int impactedRecordCount)> PurgeOutcomesForCustomerAsync(Guid customerId);
 
-        //Task<(bool processedSuccessfully, int impactedRecordCount)> PurgePriorityGroupsForCustomerAsync(Guid customerId);
-
         Task<(bool processedSuccessfully, int impactedRecordCount)> PurgeSessionsForCustomerAsync(Guid customerId);
 
         Task<(bool processedSuccessfully, int impactedRecordCount)> PurgeSubscriptionsForCustomerAsync(Guid customerId);
