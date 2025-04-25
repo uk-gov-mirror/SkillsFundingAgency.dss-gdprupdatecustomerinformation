@@ -6,7 +6,7 @@ using NCS.DSS.DataUtility.Models;
 using Newtonsoft.Json;
 using System.Text;
 
-namespace NCS.DSS.DataUtility.Function
+namespace NCS.DSS.DataUtility.Functions
 {
     public class DeleteCustomerData
     {

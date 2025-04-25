@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 using NCS.DSS.DataUtility.Interfaces;
 using NCS.DSS.DataUtility.Models;
 
-namespace NCS.DSS.DataUtility.Function
+namespace NCS.DSS.DataUtility.Functions
 {
     public class RetrieveCustomersToBeDeleted
     {

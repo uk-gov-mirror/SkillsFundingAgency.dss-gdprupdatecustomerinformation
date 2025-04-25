@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 using NCS.DSS.DataUtility.Interfaces;
 using Newtonsoft.Json;
 
-namespace NCS.DSS.DataUtility.Function
+namespace NCS.DSS.DataUtility.Functions
 {
     public class CosmosBulkDelete
     {
