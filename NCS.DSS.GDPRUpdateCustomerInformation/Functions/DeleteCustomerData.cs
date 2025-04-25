@@ -13,16 +13,12 @@ namespace NCS.DSS.DataUtility.Functions
         private readonly ILogger<DeleteCustomerData> _logger;
         private readonly ICosmosDatabaseService _cosmosDatabaseService;
         private readonly ISqlDbService _sqlDbService;
-        private readonly IServiceBusService _serviceBusService;
 
-        private readonly string QUEUE_NAME = Environment.GetEnvironmentVariable("DeleteCustomerQueueName");
-
-        public DeleteCustomerData(ILogger<DeleteCustomerData> logger, ICosmosDatabaseService cosmosDatabaseService, ISqlDbService sqlDbService, IServiceBusService serviceBusService)
+        public DeleteCustomerData(ILogger<DeleteCustomerData> logger, ICosmosDatabaseService cosmosDatabaseService, ISqlDbService sqlDbService)
         {
             _logger = logger;
             _cosmosDatabaseService = cosmosDatabaseService;
             _sqlDbService = sqlDbService;
-            _serviceBusService = serviceBusService;
         }
 
         [Function(nameof(DeleteCustomerData))]
@@ -104,11 +100,15 @@ namespace NCS.DSS.DataUtility.Functions
                 } 
                 else
                 {
+                    // PHASE 3 - DELETE CUSTOMER RECORD FROM SQL DB
+                    int recordCountSqlDbCustomerTable = await _sqlDbService.PurgeCustomerDataAsync(queueBody.CustomerId);
+
+                    _logger.LogInformation($">> SQL DB customer records for '{queueBody.CustomerId.ToString()}' <<");
+                    _logger.LogInformation($"- Customer record and history table: {recordCountSqlDbCustomerTable}");
+                    _logger.LogInformation($">> Grand total : {recordCountSqlDbCustomerTable} <<");
+
                     _logger.LogInformation("Processing succeeded - completing message");
                     await messageActions.CompleteMessageAsync(message);
-
-                    // queue new message to delete customer record
-                    await _serviceBusService.SendQueueMessageAsync(queueBody, QUEUE_NAME);
                 }
             }
             catch (Exception ex)
