@@ -32,62 +32,20 @@ namespace NCS.DSS.DataUtility.Functions
                 correctDateTime = correctDateTime.AddHours(1);
             }
 
-            //get the UK culture and return the correct date time in the correct format
-            //var culture = new CultureInfo("en-GB");
-            
-            
-            //Console.WriteLine(correctDateTime.ToString(culture));
-
-
-
-
-
-            //DateTime today = DateTime.Now;
-            //DateTime todayUTC = DateTime.Now.ToUniversalTime();
-
             TimeSpan startPause = new TimeSpan(7, 0, 0); // 7 AM
-            TimeSpan endPause = new TimeSpan(19, 0, 0); // 7 PM
-            TimeSpan datetimeAsSpan = new TimeSpan(correctDateTime.Ticks);
+            TimeSpan endPause = new TimeSpan(18, 0, 0); // 7 PM
+            TimeSpan datetimeAsSpan2 = new TimeSpan(correctDateTime.Hour, correctDateTime.Minute, correctDateTime.Second);
 
-            //_logger.LogInformation($"NOW: {today.ToString()}");
-            //_logger.LogInformation($"NOW UTC: {todayUTC.ToString()}");
-            _logger.LogInformation($"START TIME: {startPause.ToString()}");
-            _logger.LogInformation($"END TIME: {endPause.ToString()}");
-            _logger.LogInformation($"CONVERTED TIME: {datetimeAsSpan.ToString()}");
-
-            //DateTime currentDateTimeUTC = DateTime.Now.ToUniversalTime();
-            //TimeSpan currentTime = DateTime.Now.TimeOfDay;
-
-            //DateTime
-
-            //if (DateTime.UtcNow >= Convert.ToDateTime((String)context.Variables["startDateTime"]) && DateTime.UtcNow <= Convert.ToDateTime((String)context.Variables["endDateTime"]))
-            //{
-            //    isDateWithinRange = "Yes";
-            //}
-
-            ////var dt = new DateTime(localTime.Ticks);
-            ////var utc = dt.ToUniversalTime();
-            ////return new TimeSpan(utc.Ticks);
-
-            //TimeSpan stopTime = new TimeSpan(16, 10, 0);
-            //TimeSpan startTime = new TimeSpan(16, 20, 0);
-            //TimeSpan timespanUTC = new TimeSpan(currentDateTimeUTC.Ticks);
-
-            //_logger.LogInformation($"CURRENT TIME: {currentTime.ToString()}");
-            //_logger.LogInformation($"CURRENT TIME UTC: {currentDateTimeUTC.ToString()}");
-
-            //_logger.LogInformation($"timespan UTC: {timespanUTC.ToString()}");
-            //_logger.LogInformation($"stop: {stopTime.ToString()}");
-            //_logger.LogInformation($"start: {startTime.ToString()}");
-
-            //if ((currentTime > stopTime) && (currentTime < startTime))
-            //{
-            //    Environment.SetEnvironmentVariable("AzureWebJobs.DeleteCustomerData.Disabled", "true");
-            //} 
-            //else
-            //{
-            //    Environment.SetEnvironmentVariable("AzureWebJobs.DeleteCustomerData.Disabled", "false");
-            //}
+            if ((datetimeAsSpan2 >= startPause) && (datetimeAsSpan2 < endPause))
+            {
+                Environment.SetEnvironmentVariable("AzureWebJobs.DeleteCustomerData.Disabled", "true");
+                _logger.LogInformation("WITHIN OPERATIONAL HOURS - disable the trigger");
+            } 
+            else
+            {
+                Environment.SetEnvironmentVariable("AzureWebJobs.DeleteCustomerData.Disabled", "false");
+                _logger.LogInformation("OUTSIDE OF OPERATIONAL HOURS - enable the trigger");
+            }
         }
     }
 }
