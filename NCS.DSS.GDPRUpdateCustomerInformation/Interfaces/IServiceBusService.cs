@@ -2,6 +2,6 @@
 {
     public interface IServiceBusService
     {
-        Task<bool> SendQueueMessageAsync<T>(T messageBody);
+        Task<bool> SendQueueMessageAsync<T>(T messageBody, string queueName);
     }
 }

@@ -8,19 +8,20 @@ namespace NCS.DSS.DataUtility.Services
     public class ServiceBusService : IServiceBusService
     {
         private readonly ILogger<ServiceBusService> _logger;
-        private readonly ServiceBusSender _serviceBusSender;
-        private readonly string QueueName = Environment.GetEnvironmentVariable("GdprPurgeQueueName");
+        private readonly ServiceBusClient _serviceBusClient;
 
         public ServiceBusService(ILogger<ServiceBusService> logger, ServiceBusClient serviceBusClient)
         {
             _logger = logger;
-            _serviceBusSender = serviceBusClient.CreateSender(QueueName);
+            _serviceBusClient = serviceBusClient;
         }
 
-        public async Task<bool> SendQueueMessageAsync<T>(T messageBody)
+        public async Task<bool> SendQueueMessageAsync<T>(T messageBody, string queueName)
         {
             _logger.LogInformation("ServiceBusService method 'SendQueueMessageAsync' has been called");
-            _logger.LogInformation($"Attempting to send message onto queue '{QueueName}'");
+            _logger.LogInformation($"Attempting to send message onto queue '{queueName}'");
+
+            ServiceBusSender serviceBusSender = _serviceBusClient.CreateSender(queueName);
 
             string jsonSerialized = JsonConvert.SerializeObject(messageBody);
             byte[] jsonAsByteArray = System.Text.Encoding.UTF8.GetBytes(jsonSerialized);
@@ -32,7 +33,7 @@ namespace NCS.DSS.DataUtility.Services
 
             try
             {
-                await _serviceBusSender.SendMessageAsync(message);
+                await serviceBusSender.SendMessageAsync(message);
             }
             catch (Exception ex)
             {

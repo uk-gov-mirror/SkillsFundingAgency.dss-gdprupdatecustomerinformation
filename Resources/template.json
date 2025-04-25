@@ -32,9 +32,6 @@
     "storageAccountKey": {
       "type": "string"
     },
-    "GDPRUpdateCustomersStoredProcedureName": {
-      "type": "string"
-    },
     "GDPRIdentifyCustomersStoredProcedureName": {
       "type": "string"
     },
@@ -66,10 +63,10 @@
         "APPINSIGHTS_INSTRUMENTATIONKEY": "[parameters('appInsightsInstrumentationKey')]",
         "CosmosDBConnectionString": "[format('AccountEndpoint={0}/;AccountKey={1};', parameters('cosmosDbEndpoint'), parameters('cosmosDbKey'))]",
         "GDPRIdentifyCustomersStoredProcedureName": "[parameters('GDPRIdentifyCustomersStoredProcedureName')]",
-        "GDPRUpdateCustomersStoredProcedureName": "[parameters('GDPRUpdateCustomersStoredProcedureName')]",
         "ServiceBusConnectionString": "[format('@Microsoft.KeyVault(VaultName={0};SecretName=ServiceBusConnectionString)', parameters('keyVaultName'))]",
-        "GdprPurgeQueueName": "RedactCustomer",
-        "GdprPurgeTimerSchedule": "*/15 * * * *",
+        "DeleteCustomerDataQueueName": "RedactCustomer",
+        "DeleteCustomerQueueName": "RedactCustomer",
+        "GdprTimerSchedule": "*/15 * * * *",
         "AzureWebJobs.RetrieveCustomersToBeDeleted.Disabled": true
       },
       "copy": {

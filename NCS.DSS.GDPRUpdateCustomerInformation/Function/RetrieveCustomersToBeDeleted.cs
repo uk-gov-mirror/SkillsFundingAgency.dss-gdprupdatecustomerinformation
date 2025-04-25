@@ -11,6 +11,8 @@ namespace NCS.DSS.DataUtility.Function
         private readonly ISqlDbService _sqlDbService;
         private readonly IServiceBusService _serviceBusService;
 
+        private readonly string QUEUE_NAME = Environment.GetEnvironmentVariable("DeleteCustomerDataQueueName");
+
         public RetrieveCustomersToBeDeleted(ILogger<RetrieveCustomersToBeDeleted> logger, ISqlDbService sqlDbService, IServiceBusService serviceBusService)
         {
             _logger = logger;
@@ -19,7 +21,7 @@ namespace NCS.DSS.DataUtility.Function
         }
 
         [Function(nameof(RetrieveCustomersToBeDeleted))]
-        public async Task Run([TimerTrigger("%GdprPurgeTimerSchedule%")] TimerInfo timer)
+        public async Task Run([TimerTrigger("%GdprTimerSchedule%")] TimerInfo timer)
         {
             _logger.LogInformation($"Function '{nameof(RetrieveCustomersToBeDeleted)}' has been invoked");
 
@@ -45,7 +47,7 @@ namespace NCS.DSS.DataUtility.Function
                         CustomerId = customerId
                     };
 
-                    await _serviceBusService.SendQueueMessageAsync(message);
+                    await _serviceBusService.SendQueueMessageAsync(message, QUEUE_NAME);
                 }
             }
             catch (Exception ex)

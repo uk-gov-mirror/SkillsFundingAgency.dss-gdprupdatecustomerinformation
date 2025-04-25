@@ -2,35 +2,35 @@
 {
     public interface ICosmosDatabaseService
     {
-        Task<int> PurgeActionPlansForCustomerAsync(Guid customerId);
+        Task<(bool processedSuccessfully, int impactedRecordCount)> PurgeActionPlansForCustomerAsync(Guid customerId);
 
-        Task<int> PurgeActionsForCustomerAsync(Guid customerId);
+        Task<(bool processedSuccessfully, int impactedRecordCount)> PurgeActionsForCustomerAsync(Guid customerId);
 
-        Task<int> PurgeAddressesForCustomerAsync(Guid customerId);
+        Task<(bool processedSuccessfully, int impactedRecordCount)> PurgeAddressesForCustomerAsync(Guid customerId);
 
-        Task<int> PurgeContactDetailsForCustomerAsync(Guid customerId);
+        Task<(bool processedSuccessfully, int impactedRecordCount)> PurgeContactDetailsForCustomerAsync(Guid customerId);
 
-        Task<int> PurgeDigitalIdentitiesForCustomerAsync(Guid customerId);
+        Task<(bool processedSuccessfully, int impactedRecordCount)> PurgeDigitalIdentitiesForCustomerAsync(Guid customerId);
 
-        Task<int> PurgeDiversityDetailsForCustomerAsync(Guid customerId);
+        Task<(bool processedSuccessfully, int impactedRecordCount)> PurgeDiversityDetailsForCustomerAsync(Guid customerId);
 
-        Task<int> PurgeEmploymentProgressionsForCustomerAsync(Guid customerId);
+        Task<(bool processedSuccessfully, int impactedRecordCount)> PurgeEmploymentProgressionsForCustomerAsync(Guid customerId);
 
-        Task<int> PurgeGoalsForCustomerAsync(Guid customerId);
+        Task<(bool processedSuccessfully, int impactedRecordCount)> PurgeGoalsForCustomerAsync(Guid customerId);
 
-        Task<int> PurgeLearningProgressionsForCustomerAsync(Guid customerId);
+        Task<(bool processedSuccessfully, int impactedRecordCount)> PurgeLearningProgressionsForCustomerAsync(Guid customerId);
 
-        Task<int> PurgeOutcomesForCustomerAsync(Guid customerId);
+        Task<(bool processedSuccessfully, int impactedRecordCount)> PurgeOutcomesForCustomerAsync(Guid customerId);
 
-        Task<int> PurgeSessionsForCustomerAsync(Guid customerId);
+        Task<(bool processedSuccessfully, int impactedRecordCount)> PurgeSessionsForCustomerAsync(Guid customerId);
 
-        Task<int> PurgeSubscriptionsForCustomerAsync(Guid customerId);
+        Task<(bool processedSuccessfully, int impactedRecordCount)> PurgeSubscriptionsForCustomerAsync(Guid customerId);
 
-        Task<int> PurgeTransfersForCustomerAsync(Guid customerId);
+        Task<(bool processedSuccessfully, int impactedRecordCount)> PurgeTransfersForCustomerAsync(Guid customerId);
 
-        Task<int> PurgeWebchatsForCustomerAsync(Guid customerId);
+        Task<(bool processedSuccessfully, int impactedRecordCount)> PurgeWebchatsForCustomerAsync(Guid customerId);
 
-        Task<int> PurgeCustomerRecordAsync(Guid customerId);
+        Task<(bool processedSuccessfully, int impactedRecordCount)> PurgeCustomerRecordAsync(Guid customerId);
 
         Task DeleteGenericRecordsFromContainer(string databaseName, string containerName, string field, string value, bool int_bool);
     }
