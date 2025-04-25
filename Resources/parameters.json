@@ -32,6 +32,9 @@
         "storageAccountKey": {
             "value": "__SharedStorageAccountKey__"
         },
+        "GDPRUpdateCustomersStoredProcedureName": {
+            "value": "__GDPRUpdateCustomersStoredProcedureName__"
+        },
         "GDPRIdentifyCustomersStoredProcedureName": {
             "value": "__GDPRIdentifyCustomersStoredProcedureName__"
         },

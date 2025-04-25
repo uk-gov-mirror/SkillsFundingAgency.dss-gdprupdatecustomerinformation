@@ -35,6 +35,9 @@
     "GDPRIdentifyCustomersStoredProcedureName": {
       "type": "string"
     },
+    "GDPRUpdateCustomersStoredProcedureName": {
+      "type": "string"
+    },
     "workspaceName": {
       "type": "string"
     },
