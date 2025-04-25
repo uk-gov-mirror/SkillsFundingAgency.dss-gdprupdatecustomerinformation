@@ -15,25 +15,42 @@ namespace NCS.DSS.DataUtility.Functions
         [Function("SetGdprOperatingHours")]
         public void Run([TimerTrigger("*/5 * * * *")] TimerInfo myTimer) // every 5 minutes
         {
-            DateTime currentDateTimeUTC = DateTime.Now.ToUniversalTime();
-            TimeSpan currentTime = DateTime.Now.TimeOfDay;
+            DateTime today = DateTime.Now;
+            DateTime todayUTC = DateTime.Now.ToUniversalTime();
 
-            
-            
-            //var dt = new DateTime(localTime.Ticks);
-            //var utc = dt.ToUniversalTime();
-            //return new TimeSpan(utc.Ticks);
+            TimeSpan startPause = new TimeSpan(7, 0, 0); // 7 AM
+            TimeSpan endPause = new TimeSpan(19, 0, 0); // 7 PM
 
-            TimeSpan stopTime = new TimeSpan(16, 10, 0);
-            TimeSpan startTime = new TimeSpan(16, 20, 0);
-            TimeSpan timespanUTC = new TimeSpan(currentDateTimeUTC.Ticks);
+            _logger.LogInformation($"NOW: {today.ToString()}");
+            _logger.LogInformation($"NOW UTC: {todayUTC.ToString()}");
+            _logger.LogInformation($"START TIME: {startPause.ToString()}");
+            _logger.LogInformation($"END TIME: {endPause.ToString()}");
 
-            _logger.LogInformation($"CURRENT TIME: {currentTime.ToString()}");
-            _logger.LogInformation($"CURRENT TIME UTC: {currentDateTimeUTC.ToString()}");
 
-            _logger.LogInformation($"timespan UTC: {timespanUTC.ToString()}");
-            _logger.LogInformation($"stop: {stopTime.ToString()}");
-            _logger.LogInformation($"start: {startTime.ToString()}");
+            //DateTime currentDateTimeUTC = DateTime.Now.ToUniversalTime();
+            //TimeSpan currentTime = DateTime.Now.TimeOfDay;
+
+            //DateTime
+
+            //if (DateTime.UtcNow >= Convert.ToDateTime((String)context.Variables["startDateTime"]) && DateTime.UtcNow <= Convert.ToDateTime((String)context.Variables["endDateTime"]))
+            //{
+            //    isDateWithinRange = "Yes";
+            //}
+
+            ////var dt = new DateTime(localTime.Ticks);
+            ////var utc = dt.ToUniversalTime();
+            ////return new TimeSpan(utc.Ticks);
+
+            //TimeSpan stopTime = new TimeSpan(16, 10, 0);
+            //TimeSpan startTime = new TimeSpan(16, 20, 0);
+            //TimeSpan timespanUTC = new TimeSpan(currentDateTimeUTC.Ticks);
+
+            //_logger.LogInformation($"CURRENT TIME: {currentTime.ToString()}");
+            //_logger.LogInformation($"CURRENT TIME UTC: {currentDateTimeUTC.ToString()}");
+
+            //_logger.LogInformation($"timespan UTC: {timespanUTC.ToString()}");
+            //_logger.LogInformation($"stop: {stopTime.ToString()}");
+            //_logger.LogInformation($"start: {startTime.ToString()}");
 
             //if ((currentTime > stopTime) && (currentTime < startTime))
             //{
