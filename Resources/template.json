@@ -66,7 +66,7 @@
         "ServiceBusConnectionString": "[format('@Microsoft.KeyVault(VaultName={0};SecretName=ServiceBusConnectionString)', parameters('keyVaultName'))]",
         "DeleteCustomerDataQueueName": "Gdpr.Deletecustomerdata",
         "DeleteCustomerQueueName": "Gdpr.Deletecustomer",
-        "GdprTimerSchedule": "*/15 * * * *",
+        "GdprTimerSchedule": "0 * * * *",
         "AzureWebJobs.RetrieveCustomersToBeDeleted.Disabled": true
       },
       "copy": {
