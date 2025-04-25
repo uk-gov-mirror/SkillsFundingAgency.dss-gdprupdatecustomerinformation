@@ -19,6 +19,8 @@ namespace NCS.DSS.DataUtility.Functions
             TimeSpan stopTime = new TimeSpan(16, 10, 0);
             TimeSpan startTime = new TimeSpan(16, 20, 0);
 
+            _logger.LogInformation($"CURRENT TIME: {currentTime.ToString()}");
+
             if ((currentTime > stopTime) && (currentTime < startTime))
             {
                 Environment.SetEnvironmentVariable("AzureWebJobs.DeleteCustomerData.Disabled", "true");
