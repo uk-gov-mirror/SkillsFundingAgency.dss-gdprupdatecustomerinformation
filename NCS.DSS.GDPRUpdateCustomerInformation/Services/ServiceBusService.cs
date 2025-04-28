@@ -9,6 +9,7 @@ namespace NCS.DSS.DataUtility.Services
     {
         private readonly ILogger<ServiceBusService> _logger;
         private readonly ServiceBusClient _serviceBusClient;
+        private readonly Dictionary<string, ServiceBusSender> senders = new Dictionary<string, ServiceBusSender>();
 
         public ServiceBusService(ILogger<ServiceBusService> logger, ServiceBusClient serviceBusClient)
         {
@@ -21,7 +22,7 @@ namespace NCS.DSS.DataUtility.Services
             _logger.LogInformation("ServiceBusService method 'SendQueueMessageAsync' has been called");
             _logger.LogInformation($"Attempting to send message onto queue '{queueName}'");
 
-            ServiceBusSender serviceBusSender = _serviceBusClient.CreateSender(queueName);
+            ServiceBusSender serviceBusSender = GetServiceBusSender(queueName);
 
             string jsonSerialized = JsonConvert.SerializeObject(messageBody);
             byte[] jsonAsByteArray = System.Text.Encoding.UTF8.GetBytes(jsonSerialized);
@@ -44,6 +45,16 @@ namespace NCS.DSS.DataUtility.Services
             _logger.LogInformation($"Message was sent successfully");
 
             return true;
+        }
+
+        private ServiceBusSender GetServiceBusSender(string queueName)
+        {
+            if (!senders.ContainsKey(queueName))
+            {
+                senders[queueName] = _serviceBusClient.CreateSender(queueName);
+            }
+
+            return senders[queueName];
         }
     }
 }
