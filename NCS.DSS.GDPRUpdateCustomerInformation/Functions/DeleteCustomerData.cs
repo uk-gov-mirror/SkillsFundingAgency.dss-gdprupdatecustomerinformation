@@ -38,60 +38,60 @@ namespace NCS.DSS.DataUtility.Functions
             try
             {
                 // PHASE 1 - DELETE DATA FROM COSMOS DB
-                var actionPlanDocCountCDB = await _cosmosDatabaseService.PurgeActionPlansForCustomerAsync(queueBody.CustomerId);
-                var actionDocCountCDB = await _cosmosDatabaseService.PurgeActionsForCustomerAsync(queueBody.CustomerId);
-                var addressDocCountCDB = await _cosmosDatabaseService.PurgeAddressesForCustomerAsync(queueBody.CustomerId);
-                var contactDetailDocCountCDB = await _cosmosDatabaseService.PurgeContactDetailsForCustomerAsync(queueBody.CustomerId);
-                var digitalIdentityDocCountCDB = await _cosmosDatabaseService.PurgeDigitalIdentitiesForCustomerAsync(queueBody.CustomerId);
-                var diversityDetailDocCountCDB = await _cosmosDatabaseService.PurgeDiversityDetailsForCustomerAsync(queueBody.CustomerId);
-                var employmentProgressionDocCountCDB = await _cosmosDatabaseService.PurgeEmploymentProgressionsForCustomerAsync(queueBody.CustomerId);
-                var goalDocCountCDB = await _cosmosDatabaseService.PurgeGoalsForCustomerAsync(queueBody.CustomerId);
-                var interactionDocCountCDB = await _cosmosDatabaseService.PurgeInteractionsForCustomerAsync(queueBody.CustomerId);
-                var learningProgressionDocCountCDB = await _cosmosDatabaseService.PurgeLearningProgressionsForCustomerAsync(queueBody.CustomerId);
-                var outcomeDocCountCDB = await _cosmosDatabaseService.PurgeOutcomesForCustomerAsync(queueBody.CustomerId);
-                var sessionDocCountCDB = await _cosmosDatabaseService.PurgeSessionsForCustomerAsync(queueBody.CustomerId);
-                var subscriptionDocCountCDB = await _cosmosDatabaseService.PurgeSubscriptionsForCustomerAsync(queueBody.CustomerId);
-                var transferDocCountCDB = await _cosmosDatabaseService.PurgeTransfersForCustomerAsync(queueBody.CustomerId);
-                var webchatDocCountCDB = await _cosmosDatabaseService.PurgeWebchatsForCustomerAsync(queueBody.CustomerId);
-                var customerDocCountCDB = await _cosmosDatabaseService.PurgeCustomerRecordAsync(queueBody.CustomerId);
+                var actionPlanCosmosDB = await _cosmosDatabaseService.PurgeActionPlansForCustomerAsync(queueBody.CustomerId);
+                var actionCosmosDB = await _cosmosDatabaseService.PurgeActionsForCustomerAsync(queueBody.CustomerId);
+                var addressCosmosDB = await _cosmosDatabaseService.PurgeAddressesForCustomerAsync(queueBody.CustomerId);
+                var contactDetailCosmosDB = await _cosmosDatabaseService.PurgeContactDetailsForCustomerAsync(queueBody.CustomerId);
+                var digitalIdentityCosmosDB = await _cosmosDatabaseService.PurgeDigitalIdentitiesForCustomerAsync(queueBody.CustomerId);
+                var diversityDetailCosmosDB = await _cosmosDatabaseService.PurgeDiversityDetailsForCustomerAsync(queueBody.CustomerId);
+                var employmentProgressionCosmosDB = await _cosmosDatabaseService.PurgeEmploymentProgressionsForCustomerAsync(queueBody.CustomerId);
+                var goalCosmosDB = await _cosmosDatabaseService.PurgeGoalsForCustomerAsync(queueBody.CustomerId);
+                var interactionCosmosDB = await _cosmosDatabaseService.PurgeInteractionsForCustomerAsync(queueBody.CustomerId);
+                var learningProgressionCosmosDB = await _cosmosDatabaseService.PurgeLearningProgressionsForCustomerAsync(queueBody.CustomerId);
+                var outcomeCosmosDB = await _cosmosDatabaseService.PurgeOutcomesForCustomerAsync(queueBody.CustomerId);
+                var sessionCosmosDB = await _cosmosDatabaseService.PurgeSessionsForCustomerAsync(queueBody.CustomerId);
+                var subscriptionCosmosDB = await _cosmosDatabaseService.PurgeSubscriptionsForCustomerAsync(queueBody.CustomerId);
+                var transferCosmosDB = await _cosmosDatabaseService.PurgeTransfersForCustomerAsync(queueBody.CustomerId);
+                var webchatCosmosDB = await _cosmosDatabaseService.PurgeWebchatsForCustomerAsync(queueBody.CustomerId);
+                var customerCosmosDB = await _cosmosDatabaseService.PurgeCustomerRecordAsync(queueBody.CustomerId);
 
-                bool cosmosFailureHasOccurred = !actionPlanDocCountCDB.processedSuccessfully
-                    || !actionDocCountCDB.processedSuccessfully
-                    || !addressDocCountCDB.processedSuccessfully
-                    || !contactDetailDocCountCDB.processedSuccessfully
-                    || !digitalIdentityDocCountCDB.processedSuccessfully
-                    || !diversityDetailDocCountCDB.processedSuccessfully
-                    || !employmentProgressionDocCountCDB.processedSuccessfully
-                    || !goalDocCountCDB.processedSuccessfully
-                    || !interactionDocCountCDB.processedSuccessfully
-                    || !learningProgressionDocCountCDB.processedSuccessfully
-                    || !outcomeDocCountCDB.processedSuccessfully
-                    || !sessionDocCountCDB.processedSuccessfully
-                    || !subscriptionDocCountCDB.processedSuccessfully
-                    || !transferDocCountCDB.processedSuccessfully
-                    || !webchatDocCountCDB.processedSuccessfully
-                    || !customerDocCountCDB.processedSuccessfully;
+                bool cosmosFailureHasOccurred = !actionPlanCosmosDB.processedSuccessfully
+                    || !actionCosmosDB.processedSuccessfully
+                    || !addressCosmosDB.processedSuccessfully
+                    || !contactDetailCosmosDB.processedSuccessfully
+                    || !digitalIdentityCosmosDB.processedSuccessfully
+                    || !diversityDetailCosmosDB.processedSuccessfully
+                    || !employmentProgressionCosmosDB.processedSuccessfully
+                    || !goalCosmosDB.processedSuccessfully
+                    || !interactionCosmosDB.processedSuccessfully
+                    || !learningProgressionCosmosDB.processedSuccessfully
+                    || !outcomeCosmosDB.processedSuccessfully
+                    || !sessionCosmosDB.processedSuccessfully
+                    || !subscriptionCosmosDB.processedSuccessfully
+                    || !transferCosmosDB.processedSuccessfully
+                    || !webchatCosmosDB.processedSuccessfully
+                    || !customerCosmosDB.processedSuccessfully;
 
-                int totalDocumentCount = TotalCounter(actionPlanDocCountCDB.impactedRecordCount, actionDocCountCDB.impactedRecordCount, addressDocCountCDB.impactedRecordCount, 
-                    contactDetailDocCountCDB.impactedRecordCount, digitalIdentityDocCountCDB.impactedRecordCount, diversityDetailDocCountCDB.impactedRecordCount, 
-                    employmentProgressionDocCountCDB.impactedRecordCount, goalDocCountCDB.impactedRecordCount, interactionDocCountCDB.impactedRecordCount,
-                    learningProgressionDocCountCDB.impactedRecordCount, outcomeDocCountCDB.impactedRecordCount, sessionDocCountCDB.impactedRecordCount, 
-                    subscriptionDocCountCDB.impactedRecordCount, transferDocCountCDB.impactedRecordCount, webchatDocCountCDB.impactedRecordCount, 
-                    customerDocCountCDB.impactedRecordCount
+                int totalDocumentCount = TotalCounter(actionPlanCosmosDB.impactedRecordCount, actionCosmosDB.impactedRecordCount, addressCosmosDB.impactedRecordCount, 
+                    contactDetailCosmosDB.impactedRecordCount, digitalIdentityCosmosDB.impactedRecordCount, diversityDetailCosmosDB.impactedRecordCount, 
+                    employmentProgressionCosmosDB.impactedRecordCount, goalCosmosDB.impactedRecordCount, interactionCosmosDB.impactedRecordCount,
+                    learningProgressionCosmosDB.impactedRecordCount, outcomeCosmosDB.impactedRecordCount, sessionCosmosDB.impactedRecordCount, 
+                    subscriptionCosmosDB.impactedRecordCount, transferCosmosDB.impactedRecordCount, webchatCosmosDB.impactedRecordCount, 
+                    customerCosmosDB.impactedRecordCount
                 );
 
                 string successText = cosmosFailureHasOccurred ? "no" : "yes";
 
-                _logger.LogInformation($">> All Cosmos DB docs for customer '{queueBody.CustomerId.ToString()}' <<");
-                _logger.LogInformation($"- Successfully processed: {successText}");
-                _logger.LogInformation($">> Grand total : {totalDocumentCount} <<");
+                _logger.LogInformation($">> Cosmos DB purge outcome for customer '{queueBody.CustomerId.ToString()}' <<");
+                _logger.LogInformation($"- Successfully processed? '{successText}'");
+                _logger.LogInformation($">> Documents deleted: '{totalDocumentCount}' <<");
 
                 // PHASE 2 - DELETE DATA FROM SQL DB
                 int recordCountSqlDbAllTables = await _sqlDbService.PurgeDataItemsForCustomerAsync(queueBody.CustomerId);
 
-                _logger.LogInformation($">> All SQL DB records for customer '{queueBody.CustomerId.ToString()}' <<");
-                _logger.LogInformation($"- Master and history tables: {recordCountSqlDbAllTables}");
-                _logger.LogInformation($">> Grand total : {recordCountSqlDbAllTables} <<");
+                _logger.LogInformation($">> SQL DB purge outcome for customer '{queueBody.CustomerId.ToString()}' <<");
+                _logger.LogInformation($"- Successfully processed? 'yes'"); // exception would be thrown if not successful
+                _logger.LogInformation($">> Records deleted (data and history): {recordCountSqlDbAllTables} <<");
 
                 if (cosmosFailureHasOccurred)
                 {
@@ -103,9 +103,9 @@ namespace NCS.DSS.DataUtility.Functions
                     // PHASE 3 - DELETE CUSTOMER RECORD FROM SQL DB
                     int recordCountSqlDbCustomerTable = await _sqlDbService.PurgeCustomerDataAsync(queueBody.CustomerId);
 
-                    _logger.LogInformation($">> SQL DB customer records for '{queueBody.CustomerId.ToString()}' <<");
-                    _logger.LogInformation($"- Customer record and history table: {recordCountSqlDbCustomerTable}");
-                    _logger.LogInformation($">> Grand total : {recordCountSqlDbCustomerTable} <<");
+                    _logger.LogInformation($">> SQL DB purge outcome for customer '{queueBody.CustomerId.ToString()}' <<");
+                    _logger.LogInformation($"- Successfully processed? 'yes'"); // exception would be thrown if not successful
+                    _logger.LogInformation($">> Records deleted (customer): {recordCountSqlDbCustomerTable} <<");
 
                     _logger.LogInformation("Processing succeeded - completing message");
                     await messageActions.CompleteMessageAsync(message);
