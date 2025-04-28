@@ -11,7 +11,7 @@ namespace NCS.DSS.DataUtility.Functions
         private readonly ISqlDbService _sqlDbService;
         private readonly IServiceBusService _serviceBusService;
 
-        private readonly string QUEUE_NAME = Environment.GetEnvironmentVariable("DeleteCustomerDataQueueName");
+        private readonly string QUEUE_NAME = Environment.GetEnvironmentVariable("GdprQueueName");
 
         public RetrieveCustomersToBeDeleted(ILogger<RetrieveCustomersToBeDeleted> logger, ISqlDbService sqlDbService, IServiceBusService serviceBusService)
         {

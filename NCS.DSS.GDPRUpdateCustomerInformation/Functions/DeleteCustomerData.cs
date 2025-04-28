@@ -23,7 +23,7 @@ namespace NCS.DSS.DataUtility.Functions
 
         [Function(nameof(DeleteCustomerData))]
         public async Task Run(
-            [ServiceBusTrigger("%DeleteCustomerDataQueueName%", Connection = "ServiceBusConnectionString", AutoCompleteMessages = false)]
+            [ServiceBusTrigger("%GdprQueueName%", Connection = "ServiceBusConnectionString", AutoCompleteMessages = false)]
             ServiceBusReceivedMessage message,
             ServiceBusMessageActions messageActions
         ) {

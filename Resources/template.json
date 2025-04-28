@@ -67,7 +67,7 @@
         "CosmosDBConnectionString": "[format('AccountEndpoint={0}/;AccountKey={1};', parameters('cosmosDbEndpoint'), parameters('cosmosDbKey'))]",
         "GDPRIdentifyCustomersStoredProcedureName": "[parameters('GDPRIdentifyCustomersStoredProcedureName')]",
         "ServiceBusConnectionString": "[format('@Microsoft.KeyVault(VaultName={0};SecretName=ServiceBusConnectionString)', parameters('keyVaultName'))]",
-        "DeleteCustomerDataQueueName": "Gdpr.Deletecustomerdata",
+        "GdprQueueName": "Gdpr.Deletecustomerdata",
         "GdprTimerSchedule": "0 * * * *",
         "AzureWebJobs.RetrieveCustomersToBeDeleted.Disabled": true
       },
