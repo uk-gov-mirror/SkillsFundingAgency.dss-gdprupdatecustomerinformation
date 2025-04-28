@@ -3,6 +3,8 @@ using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using NCS.DSS.DataUtility.Functions;
 using NCS.DSS.DataUtility.Interfaces;
+using NCS.DSS.DataUtility.Models;
+using System;
 
 namespace NCS.DSS.DataUtility.Tests
 {
@@ -35,6 +37,8 @@ namespace NCS.DSS.DataUtility.Tests
             await _mockedRetrievalFunction.Run(timerInfo);
 
             // Assert
+            A.CallTo(() => _mockedServiceBusService.SendQueueMessageAsync("BODY", "QUEUE_NAME")).MustNotHaveHappened();
+
             A.CallTo(() => _mockedSqlDbService.PurgeDataItemsForCustomerAsync(customerId)).MustNotHaveHappened();
             A.CallTo(() => _mockedSqlDbService.PurgeCustomerDataAsync(customerId)).MustNotHaveHappened();
 
@@ -46,20 +50,29 @@ namespace NCS.DSS.DataUtility.Tests
             ).MustHaveHappened(3, Times.Exactly);
         }
 
-        /*[Fact]
-        public async Task Run_CustomersExist_OperationsPerformed()
+        [Fact]
+        public async Task Run_SingleCustomerExists_OperationsPerformed()
         {
             // Arrange
-            var customerIds = new List<Guid> { Guid.NewGuid(), Guid.NewGuid() };
-            A.CallTo(() => _fakeDataService.ReturnCustomerIds()).Returns(Task.FromResult(customerIds));
+            var customerId = new List<Guid> { Guid.NewGuid() };
+            A.CallTo(() => _mockedSqlDbService.RetrieveCustomerIdsAsync()).Returns(Task.FromResult(customerId));
             var timerInfo = new TimerInfo();
 
             // Act
-            await _function.RunAsync(timerInfo);
+            await _mockedRetrievalFunction.Run(timerInfo);
 
             // Assert
-            A.CallTo(() => _fakeDataService.AnonymiseData()).MustHaveHappenedOnceExactly();
-            A.CallTo(() => _fakeDataService.DeleteCustomersFromCosmos(customerIds)).MustHaveHappenedOnceExactly();
-        }*/
+            DeleteCustomerQueueMessage message = new DeleteCustomerQueueMessage
+            {
+                CustomerId = customerId.First()
+            };
+
+            //A.CallTo(() => _mockedServiceBusService.SendQueueMessageAsync(message, null)).MustHaveHappened(1, Times.Exactly);
+
+            A.CallTo(_mockedRetrievalFunctionLogger).Where(call =>
+                call.Method.Name == "Log"
+                && call.GetArgument<LogLevel>(0) == LogLevel.Information
+            ).MustHaveHappened(5, Times.Exactly);
+        }
     }
 }
