@@ -23,6 +23,7 @@ namespace NCS.DSS.DataUtility.Functions
             _serviceBusService = serviceBusService;
         }
 
+        // To understand the current cron trigger, visit https://crontab.guru/
         [Function(nameof(RetrieveCustomersToBeDeleted))]
         public async Task Run([TimerTrigger("%GdprTimerSchedule%")] TimerInfo timer)
         {
@@ -64,7 +65,7 @@ namespace NCS.DSS.DataUtility.Functions
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogError($"ERROR: Failed to send queue message in parallel. Exception: {ex}");
+                        _logger.LogError("ERROR: Failed to send queue message in parallel. Exception: {exception}", ex);
                         Interlocked.Increment(ref NumberOfFailures);
                     }
                 });
@@ -74,7 +75,7 @@ namespace NCS.DSS.DataUtility.Functions
             }
             catch (Exception ex)
             {
-                _logger.LogError($"INVOCATION ERROR ({nameof(RetrieveCustomersToBeDeleted)}): function has failed with exception: {ex}");
+                _logger.LogError("INVOCATION ERROR ({name}): function has failed with exception: {exception}", nameof(RetrieveCustomersToBeDeleted), ex);
                 throw;
             }
 

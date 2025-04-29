@@ -68,7 +68,7 @@
         "GDPRIdentifyCustomersStoredProcedureName": "[parameters('GDPRIdentifyCustomersStoredProcedureName')]",
         "ServiceBusConnectionString": "[format('@Microsoft.KeyVault(VaultName={0};SecretName=ServiceBusConnectionString)', parameters('keyVaultName'))]",
         "GdprQueueName": "Gdpr.Deletecustomerdata",
-        "GdprTimerSchedule": "0 * * * *"
+        "GdprTimerSchedule": "0 19 1 * *"
       },
       "copy": {
         "name": "FunctionAppSettingsCopy",
