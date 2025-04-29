@@ -48,7 +48,9 @@ namespace NCS.DSS.DataUtility.Functions
                     MaxDegreeOfParallelism = 5
                 };
 
-                await Parallel.ForEachAsync(customerIds, options, async (customerId, _) =>
+                IEnumerable<Guid> customerIdEnumerable = customerIds;
+
+                await Parallel.ForEachAsync(customerIdEnumerable, options, async (customerId, _) =>
                 {
                     DeleteCustomerQueueMessage message = new DeleteCustomerQueueMessage
                     {
