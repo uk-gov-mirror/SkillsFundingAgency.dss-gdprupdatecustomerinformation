@@ -11,7 +11,10 @@ namespace NCS.DSS.DataUtility.Functions
         private readonly ISqlDbService _sqlDbService;
         private readonly IServiceBusService _serviceBusService;
 
-        private readonly string QUEUE_NAME = Environment.GetEnvironmentVariable("GdprQueueName");
+        private readonly string QUEUE_NAME = "benqueue"; //Environment.GetEnvironmentVariable("GdprQueueName");
+
+        private static int NumberOfSuccesses;
+        private static int NumberOfFailures;
 
         public RetrieveCustomersToBeDeleted(ILogger<RetrieveCustomersToBeDeleted> logger, ISqlDbService sqlDbService, IServiceBusService serviceBusService)
         {
@@ -40,7 +43,35 @@ namespace NCS.DSS.DataUtility.Functions
 
                 _logger.LogInformation("Sending each customer ID onto a service bus queue for processing");
 
-                foreach (var customerId in customerIds)
+                var options = new ParallelOptions()
+                {
+                    MaxDegreeOfParallelism = 5
+                };
+
+                await Parallel.ForEachAsync(customerIds, options, async (customerId, _) =>
+                {
+                    DeleteCustomerQueueMessage message = new DeleteCustomerQueueMessage
+                    {
+                        CustomerId = customerId
+                    };
+
+                    try
+                    {
+                        await _serviceBusService.SendQueueMessageAsync(message, QUEUE_NAME);
+                        Interlocked.Increment(ref NumberOfSuccesses);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError($"ERROR: Failed to send queue message in parallel. Exception: {ex}");
+                        Interlocked.Increment(ref NumberOfFailures);
+                    }
+                });
+
+                _logger.LogInformation($"Total number of customer IDs: {customerIds.Count.ToString()}");
+                _logger.LogInformation($"Total number of queue messages SUCCESSFULLY sent: {NumberOfSuccesses}");
+                _logger.LogInformation($"Total number of queue messages FAILED to be sent: {NumberOfFailures}");
+
+                /*foreach (var customerId in customerIds)
                 {
                     DeleteCustomerQueueMessage message = new DeleteCustomerQueueMessage
                     {
@@ -48,7 +79,7 @@ namespace NCS.DSS.DataUtility.Functions
                     };
 
                     await _serviceBusService.SendQueueMessageAsync(message, QUEUE_NAME);
-                }
+                }*/
             }
             catch (Exception ex)
             {
