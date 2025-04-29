@@ -11,7 +11,7 @@ namespace NCS.DSS.DataUtility.Functions
         private readonly ISqlDbService _sqlDbService;
         private readonly IServiceBusService _serviceBusService;
 
-        private readonly string QUEUE_NAME = "benqueue"; //Environment.GetEnvironmentVariable("GdprQueueName");
+        private readonly string QUEUE_NAME = Environment.GetEnvironmentVariable("GdprQueueName");
 
         private static int NumberOfSuccesses;
         private static int NumberOfFailures;
@@ -60,7 +60,7 @@ namespace NCS.DSS.DataUtility.Functions
                     try
                     {
                         await _serviceBusService.SendQueueMessageAsync(message, QUEUE_NAME);
-                        Interlocked.Increment(ref NumberOfSuccesses);
+                        Interlocked.Increment(ref NumberOfSuccesses); // used for thread safety - https://jeremybytes.blogspot.com/2024/02/parallelforeachasync-and-exceptions.html
                     }
                     catch (Exception ex)
                     {
@@ -69,19 +69,8 @@ namespace NCS.DSS.DataUtility.Functions
                     }
                 });
 
-                _logger.LogInformation($"Total number of customer IDs: {customerIds.Count.ToString()}");
                 _logger.LogInformation($"Total number of queue messages SUCCESSFULLY sent: {NumberOfSuccesses}");
                 _logger.LogInformation($"Total number of queue messages FAILED to be sent: {NumberOfFailures}");
-
-                /*foreach (var customerId in customerIds)
-                {
-                    DeleteCustomerQueueMessage message = new DeleteCustomerQueueMessage
-                    {
-                        CustomerId = customerId
-                    };
-
-                    await _serviceBusService.SendQueueMessageAsync(message, QUEUE_NAME);
-                }*/
             }
             catch (Exception ex)
             {
