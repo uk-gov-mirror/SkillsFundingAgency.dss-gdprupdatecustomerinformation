@@ -32,10 +32,10 @@
     "storageAccountKey": {
       "type": "string"
     },
-    "GDPRIdentifyCustomersStoredProcedureName": {
+    "GDPRUpdateCustomersStoredProcedureName": {
       "type": "string"
     },
-    "GDPRUpdateCustomersStoredProcedureName": {
+    "GDPRIdentifyCustomersStoredProcedureName": {
       "type": "string"
     },
     "workspaceName": {
