@@ -58,7 +58,7 @@ namespace NCS.DSS.DataUtility.Services
             using (SqlConnection connection = new SqlConnection(SqlDbConnectionString))
             {
                 string executionQuery =
-                     // master data tables
+                    // master data tables
                     @"DELETE FROM [dss-actionplans] WHERE CustomerId=@customerId;" +
                      "DELETE FROM [dss-actions] WHERE CustomerId=@customerId;" +
                      "DELETE FROM [dss-addresses] WHERE CustomerId=@customerId;" +
@@ -75,7 +75,7 @@ namespace NCS.DSS.DataUtility.Services
                      "DELETE FROM [dss-subscriptions] WHERE CustomerId=@customerId;" +
                      "DELETE FROM [dss-transfers] WHERE CustomerId=@customerId;" +
                      "DELETE FROM [dss-webchats] WHERE CustomerId=@customerId;" +
-                        
+
                      // history tables
                      "DELETE FROM [dss-actionplans-history] WHERE CustomerId=@customerId;" +
                      "DELETE FROM [dss-actions-history] WHERE CustomerId=@customerId;" +

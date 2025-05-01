@@ -4,7 +4,6 @@ using Microsoft.Extensions.Logging;
 using NCS.DSS.DataUtility.Functions;
 using NCS.DSS.DataUtility.Interfaces;
 using NCS.DSS.DataUtility.Models;
-using System;
 
 namespace NCS.DSS.DataUtility.Tests
 {
@@ -44,8 +43,8 @@ namespace NCS.DSS.DataUtility.Tests
 
             A.CallTo(() => _mockedCosmosDbService.PurgeActionPlansForCustomerAsync(customerId)).MustNotHaveHappened();
 
-            A.CallTo(_mockedRetrievalFunctionLogger).Where(call => 
-                call.Method.Name == "Log" 
+            A.CallTo(_mockedRetrievalFunctionLogger).Where(call =>
+                call.Method.Name == "Log"
                 && call.GetArgument<LogLevel>(0) == LogLevel.Information
             ).MustHaveHappened(3, Times.Exactly);
         }

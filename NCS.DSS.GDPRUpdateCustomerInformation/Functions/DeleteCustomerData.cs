@@ -26,7 +26,8 @@ namespace NCS.DSS.DataUtility.Functions
             [ServiceBusTrigger("%GdprQueueName%", Connection = "ServiceBusConnectionString", AutoCompleteMessages = false)]
             ServiceBusReceivedMessage message,
             ServiceBusMessageActions messageActions
-        ) {
+        )
+        {
             _logger.LogInformation($"Function '{nameof(DeleteCustomerData)}' has been invoked");
 
             // convert queue message into usage object
@@ -72,11 +73,11 @@ namespace NCS.DSS.DataUtility.Functions
                     || !webchatCosmosDB.processedSuccessfully
                     || !customerCosmosDB.processedSuccessfully;
 
-                int totalDocumentCount = TotalCounter(actionPlanCosmosDB.impactedRecordCount, actionCosmosDB.impactedRecordCount, addressCosmosDB.impactedRecordCount, 
-                    contactDetailCosmosDB.impactedRecordCount, digitalIdentityCosmosDB.impactedRecordCount, diversityDetailCosmosDB.impactedRecordCount, 
+                int totalDocumentCount = TotalCounter(actionPlanCosmosDB.impactedRecordCount, actionCosmosDB.impactedRecordCount, addressCosmosDB.impactedRecordCount,
+                    contactDetailCosmosDB.impactedRecordCount, digitalIdentityCosmosDB.impactedRecordCount, diversityDetailCosmosDB.impactedRecordCount,
                     employmentProgressionCosmosDB.impactedRecordCount, goalCosmosDB.impactedRecordCount, interactionCosmosDB.impactedRecordCount,
-                    learningProgressionCosmosDB.impactedRecordCount, outcomeCosmosDB.impactedRecordCount, sessionCosmosDB.impactedRecordCount, 
-                    subscriptionCosmosDB.impactedRecordCount, transferCosmosDB.impactedRecordCount, webchatCosmosDB.impactedRecordCount, 
+                    learningProgressionCosmosDB.impactedRecordCount, outcomeCosmosDB.impactedRecordCount, sessionCosmosDB.impactedRecordCount,
+                    subscriptionCosmosDB.impactedRecordCount, transferCosmosDB.impactedRecordCount, webchatCosmosDB.impactedRecordCount,
                     customerCosmosDB.impactedRecordCount
                 );
 
@@ -97,7 +98,7 @@ namespace NCS.DSS.DataUtility.Functions
                 {
                     _logger.LogWarning("Processing failure identified - moving originating message to dead letter queue");
                     await messageActions.DeadLetterMessageAsync(message);
-                } 
+                }
                 else
                 {
                     // PHASE 3 - DELETE CUSTOMER RECORD FROM SQL DB
@@ -115,7 +116,7 @@ namespace NCS.DSS.DataUtility.Functions
             {
                 _logger.LogError($"INVOCATION ERROR ({nameof(DeleteCustomerData)}): function has failed with exception: {ex}. Moving originating message to dead letter queue");
                 await messageActions.DeadLetterMessageAsync(message);
-                
+
                 throw;
             }
 

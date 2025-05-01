@@ -66,7 +66,7 @@ namespace NCS.DSS.DataUtility.Functions
                         next++;
                     }
                 }
-                
+
                 _logger.LogInformation($"{nameof(CosmosBulkDelete)} has finished invocation successfully");
 
                 return new OkResult();
