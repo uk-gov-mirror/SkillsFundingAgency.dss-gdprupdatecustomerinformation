@@ -66,8 +66,6 @@ namespace NCS.DSS.DataUtility.Tests
                 CustomerId = customerId.First()
             };
 
-            //A.CallTo(() => _mockedServiceBusService.SendQueueMessageAsync(message, null)).MustHaveHappened(1, Times.Exactly);
-
             A.CallTo(_mockedRetrievalFunctionLogger).Where(call =>
                 call.Method.Name == "Log"
                 && call.GetArgument<LogLevel>(0) == LogLevel.Information
