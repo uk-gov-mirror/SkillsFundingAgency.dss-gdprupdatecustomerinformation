@@ -114,25 +114,6 @@ namespace NCS.DSS.DataUtility.Services
             return (false, 0);
         }
 
-        public async Task<(bool processedSuccessfully, int impactedRecordCount)> PurgeDigitalIdentitiesForCustomerAsync(Guid customerId)
-        {
-            Container cosmosDbContainer = _cosmosDbClient.GetContainer("digitalidentities", "digitalidentities");
-            List<DigitalIdentity> digitalIdentities = await RetrieveDigitalIdentitiesForCustomerAsync(customerId, cosmosDbContainer);
-            bool failureOccurred = false;
-
-            foreach (var digitalIdentity in digitalIdentities)
-            {
-                bool success = await DeleteCosmosDocumentAsync(digitalIdentity.IdentityID.ToString(), cosmosDbContainer);
-
-                if (!success)
-                {
-                    failureOccurred = true;
-                }
-            }
-
-            return (!failureOccurred, digitalIdentities.Count());
-        }
-
         public async Task<(bool processedSuccessfully, int impactedRecordCount)> PurgeDiversityDetailsForCustomerAsync(Guid customerId)
         {
             Container cosmosDbContainer = _cosmosDbClient.GetContainer("diversitydetails", "diversitydetails");
@@ -511,33 +492,6 @@ namespace NCS.DSS.DataUtility.Services
 
                 _logger.LogInformation("Processing complete");
                 return contactDetailList;
-            }
-        }
-
-        private async Task<List<DigitalIdentity>> RetrieveDigitalIdentitiesForCustomerAsync(Guid customerId, Container cosmosDbContainer)
-        {
-            _logger.LogInformation($"Method '{nameof(RetrieveDigitalIdentitiesForCustomerAsync)}' has been invoked");
-
-            List<DigitalIdentity> digitalIdentityList = new List<DigitalIdentity>();
-
-            _logger.LogInformation($"Attempting to retrieve all Digital Identity documents with CustomerId '{customerId}' from Cosmos DB");
-
-            using (FeedIterator<DigitalIdentity> setIterator = cosmosDbContainer
-                .GetItemLinqQueryable<DigitalIdentity>()
-                .Where(digitalIdentity => digitalIdentity.CustomerId == customerId)
-                .ToFeedIterator()
-            )
-            {
-                while (setIterator.HasMoreResults)
-                {
-                    foreach (DigitalIdentity digitalIdentity in await setIterator.ReadNextAsync())
-                    {
-                        digitalIdentityList.Add(digitalIdentity);
-                    }
-                }
-
-                _logger.LogInformation("Processing complete");
-                return digitalIdentityList;
             }
         }
 

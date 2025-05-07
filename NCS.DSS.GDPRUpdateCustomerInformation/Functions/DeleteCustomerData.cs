@@ -43,7 +43,6 @@ namespace NCS.DSS.DataUtility.Functions
                 var actionCosmosDB = await _cosmosDatabaseService.PurgeActionsForCustomerAsync(queueBody.CustomerId);
                 var addressCosmosDB = await _cosmosDatabaseService.PurgeAddressesForCustomerAsync(queueBody.CustomerId);
                 var contactDetailCosmosDB = await _cosmosDatabaseService.PurgeContactDetailsForCustomerAsync(queueBody.CustomerId);
-                var digitalIdentityCosmosDB = await _cosmosDatabaseService.PurgeDigitalIdentitiesForCustomerAsync(queueBody.CustomerId);
                 var diversityDetailCosmosDB = await _cosmosDatabaseService.PurgeDiversityDetailsForCustomerAsync(queueBody.CustomerId);
                 var employmentProgressionCosmosDB = await _cosmosDatabaseService.PurgeEmploymentProgressionsForCustomerAsync(queueBody.CustomerId);
                 var goalCosmosDB = await _cosmosDatabaseService.PurgeGoalsForCustomerAsync(queueBody.CustomerId);
@@ -60,7 +59,6 @@ namespace NCS.DSS.DataUtility.Functions
                     || !actionCosmosDB.processedSuccessfully
                     || !addressCosmosDB.processedSuccessfully
                     || !contactDetailCosmosDB.processedSuccessfully
-                    || !digitalIdentityCosmosDB.processedSuccessfully
                     || !diversityDetailCosmosDB.processedSuccessfully
                     || !employmentProgressionCosmosDB.processedSuccessfully
                     || !goalCosmosDB.processedSuccessfully
@@ -74,11 +72,10 @@ namespace NCS.DSS.DataUtility.Functions
                     || !customerCosmosDB.processedSuccessfully;
 
                 int totalDocumentCount = TotalCounter(actionPlanCosmosDB.impactedRecordCount, actionCosmosDB.impactedRecordCount, addressCosmosDB.impactedRecordCount,
-                    contactDetailCosmosDB.impactedRecordCount, digitalIdentityCosmosDB.impactedRecordCount, diversityDetailCosmosDB.impactedRecordCount,
-                    employmentProgressionCosmosDB.impactedRecordCount, goalCosmosDB.impactedRecordCount, interactionCosmosDB.impactedRecordCount,
-                    learningProgressionCosmosDB.impactedRecordCount, outcomeCosmosDB.impactedRecordCount, sessionCosmosDB.impactedRecordCount,
-                    subscriptionCosmosDB.impactedRecordCount, transferCosmosDB.impactedRecordCount, webchatCosmosDB.impactedRecordCount,
-                    customerCosmosDB.impactedRecordCount
+                    contactDetailCosmosDB.impactedRecordCount, diversityDetailCosmosDB.impactedRecordCount, employmentProgressionCosmosDB.impactedRecordCount, 
+                    goalCosmosDB.impactedRecordCount, interactionCosmosDB.impactedRecordCount, learningProgressionCosmosDB.impactedRecordCount, 
+                    outcomeCosmosDB.impactedRecordCount, sessionCosmosDB.impactedRecordCount, subscriptionCosmosDB.impactedRecordCount, transferCosmosDB.impactedRecordCount, 
+                    webchatCosmosDB.impactedRecordCount, customerCosmosDB.impactedRecordCount
                 );
 
                 string successText = cosmosFailureHasOccurred ? "no" : "yes";

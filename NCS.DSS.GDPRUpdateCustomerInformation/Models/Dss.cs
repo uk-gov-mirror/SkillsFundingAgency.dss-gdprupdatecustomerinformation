@@ -36,13 +36,6 @@ namespace NCS.DSS.DataUtility.Models
         public Guid? CustomerId { get; set; }
     }
 
-    public class DigitalIdentity
-    {
-        [JsonProperty("id")]
-        public Guid? IdentityID { get; set; }
-        public Guid CustomerId { get; set; }
-    }
-
     public class DiversityDetail
     {
         [JsonProperty("id")]
