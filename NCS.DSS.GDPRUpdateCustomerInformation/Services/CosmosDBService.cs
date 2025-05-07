@@ -13,6 +13,7 @@ namespace NCS.DSS.DataUtility.Services
         private const string AddressCosmosDb = "addresses";
         private const string ContactCosmosDb = "contacts";
         private const string CustomerCosmosDb = "customers";
+        private const string DigitalIdentityCosmosDb = "digitalidentities";
         private const string DiversityDetailsCosmosDb = "diversitydetails";
         private const string EmploymentProgressionCosmosDb = "employmentprogressions";
         private const string GoalsCosmosDb = "goals";
@@ -40,6 +41,7 @@ namespace NCS.DSS.DataUtility.Services
             var employmentProgressionTask = DeleteDocumentFromContainer(customerId, EmploymentProgressionCosmosDb, EmploymentProgressionCosmosDb);
             var goalsTask = DeleteDocumentFromContainer(customerId, GoalsCosmosDb, GoalsCosmosDb);
             var webchatsTask = DeleteDocumentFromContainer(customerId, WebchatsCosmosDb, WebchatsCosmosDb);
+            var digitalIdentityTask = DeleteDocumentFromContainer(customerId, DigitalIdentityCosmosDb, DigitalIdentityCosmosDb);
             var diverityDetailsTask = DeleteDocumentFromContainer(customerId, DiversityDetailsCosmosDb, DiversityDetailsCosmosDb);
             var learningProgressionsTask = DeleteDocumentFromContainer(customerId, LearningProgressionCosmosDb, LearningProgressionCosmosDb);
             var outcomesTask = DeleteDocumentFromContainer(customerId, OutcomesCosmosDb, OutcomesCosmosDb);
@@ -48,7 +50,7 @@ namespace NCS.DSS.DataUtility.Services
             var transfersTask = DeleteDocumentFromContainer(customerId, TransferCosmosDb, TransferCosmosDb);
 
             await Task.WhenAll(actionPlansTask, actionsTask, addressesTask, contactsTask, employmentProgressionTask,
-                goalsTask, webchatsTask, diverityDetailsTask, learningProgressionsTask,
+                goalsTask, webchatsTask, digitalIdentityTask, diverityDetailsTask, learningProgressionsTask,
                 outcomesTask, sessionsTask, subscriptionsTask, transfersTask);
 
             await DeleteDocumentFromContainer(customerId, CustomerCosmosDb, CustomerCosmosDb);
