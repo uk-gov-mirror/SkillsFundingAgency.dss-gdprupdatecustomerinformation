@@ -11,10 +11,8 @@ namespace NCS.DSS.DataUtility.Functions
         private readonly ISqlDbService _sqlDbService;
         private readonly IServiceBusService _serviceBusService;
 
-        private readonly string QUEUE_NAME = Environment.GetEnvironmentVariable("GdprQueueName");
-
-        private static int NumberOfSuccesses;
-        private static int NumberOfFailures;
+        private static int _numberOfSuccesses;
+        private static int _numberOfFailures;
 
         public RetrieveCustomersToBeDeleted(ILogger<RetrieveCustomersToBeDeleted> logger, ISqlDbService sqlDbService, IServiceBusService serviceBusService)
         {
@@ -50,6 +48,7 @@ namespace NCS.DSS.DataUtility.Functions
                 };
 
                 IEnumerable<Guid> customerIdEnumerable = customerIds;
+                string queueName = Environment.GetEnvironmentVariable("GdprQueueName");
 
                 await Parallel.ForEachAsync(customerIdEnumerable, options, async (customerId, _) =>
                 {
@@ -60,18 +59,18 @@ namespace NCS.DSS.DataUtility.Functions
 
                     try
                     {
-                        await _serviceBusService.SendQueueMessageAsync(message, QUEUE_NAME);
-                        Interlocked.Increment(ref NumberOfSuccesses); // used for thread safety - https://jeremybytes.blogspot.com/2024/02/parallelforeachasync-and-exceptions.html
+                        await _serviceBusService.SendQueueMessageAsync(message, queueName);
+                        Interlocked.Increment(ref _numberOfSuccesses); // used for thread safety - https://jeremybytes.blogspot.com/2024/02/parallelforeachasync-and-exceptions.html
                     }
                     catch (Exception ex)
                     {
                         _logger.LogError("ERROR: Failed to send queue message in parallel. Exception: {exception}", ex);
-                        Interlocked.Increment(ref NumberOfFailures);
+                        Interlocked.Increment(ref _numberOfFailures);
                     }
                 });
 
-                _logger.LogInformation($"Total number of queue messages SUCCESSFULLY sent: {NumberOfSuccesses}");
-                _logger.LogInformation($"Total number of queue messages FAILED to be sent: {NumberOfFailures}");
+                _logger.LogInformation($"Total number of queue messages SUCCESSFULLY sent: {_numberOfSuccesses}");
+                _logger.LogInformation($"Total number of queue messages FAILED to be sent: {_numberOfFailures}");
             }
             catch (Exception ex)
             {
