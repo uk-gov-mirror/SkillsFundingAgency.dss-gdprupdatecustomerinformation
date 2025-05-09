@@ -64,7 +64,7 @@ namespace NCS.DSS.DataUtility.Functions
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogError("ERROR: Failed to send queue message in parallel. Exception: {exception}", ex);
+                        _logger.LogError(ex, "ERROR: Failed to send queue message in parallel. Exception: {exception}", ex.Message);
                         Interlocked.Increment(ref _numberOfFailures);
                     }
                 });
@@ -74,7 +74,7 @@ namespace NCS.DSS.DataUtility.Functions
             }
             catch (Exception ex)
             {
-                _logger.LogError("INVOCATION ERROR ({name}): function has failed with exception: {exception}", nameof(RetrieveCustomersToBeDeleted), ex);
+                _logger.LogError(ex, "INVOCATION ERROR ({name}): function has failed with exception: {exception}", nameof(RetrieveCustomersToBeDeleted), ex.Message);
                 throw;
             }
 

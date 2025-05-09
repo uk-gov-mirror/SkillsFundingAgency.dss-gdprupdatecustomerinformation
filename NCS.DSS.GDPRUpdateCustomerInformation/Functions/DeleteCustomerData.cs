@@ -111,7 +111,7 @@ namespace NCS.DSS.DataUtility.Functions
             }
             catch (Exception ex)
             {
-                _logger.LogError($"INVOCATION ERROR ({nameof(DeleteCustomerData)}): function has failed with exception: {ex}. Moving originating message to dead letter queue");
+                _logger.LogError(ex, "INVOCATION ERROR ({functionName}): function has failed with exception: {exception}. Moving originating message to dead letter queue", nameof(DeleteCustomerData), ex.Message);
                 await messageActions.DeadLetterMessageAsync(message);
 
                 throw;
