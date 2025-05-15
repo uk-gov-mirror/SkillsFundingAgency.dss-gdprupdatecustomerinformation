@@ -49,11 +49,12 @@ namespace NCS.DSS.DataUtility.Services
 
         private ServiceBusSender GetServiceBusSender(string queueName)
         {
-            if (!_senders.ContainsKey(queueName))
+            if (_senders.TryGetValue(queueName, out ServiceBusSender storedSender))
             {
-                _senders[queueName] = _serviceBusClient.CreateSender(queueName);
+                return storedSender;
             }
 
+            _senders[queueName] = _serviceBusClient.CreateSender(queueName);
             return _senders[queueName];
         }
     }
