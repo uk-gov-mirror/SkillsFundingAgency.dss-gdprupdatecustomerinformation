@@ -8,8 +8,8 @@ namespace NCS.DSS.DataUtility.Services
     public class SqlDbService : ISqlDbService
     {
         private readonly ILogger<SqlDbService> _logger;
-        private readonly string IdentifyCustomerStoredProcName = Environment.GetEnvironmentVariable("GDPRIdentifyCustomersStoredProcedureName");
-        private readonly string SqlDbConnectionString = Environment.GetEnvironmentVariable("AzureSQLConnectionString");
+        private readonly string _identifyCustomerStoredProcName = Environment.GetEnvironmentVariable("GDPRIdentifyCustomersStoredProcedureName");
+        private readonly string _sqlDbConnectionString = Environment.GetEnvironmentVariable("AzureSQLConnectionString");
 
         public SqlDbService(ILogger<SqlDbService> logger)
         {
@@ -22,9 +22,9 @@ namespace NCS.DSS.DataUtility.Services
 
             List<Guid> customerIdList = new List<Guid>();
 
-            using (SqlConnection connection = new SqlConnection(SqlDbConnectionString))
+            using (SqlConnection connection = new SqlConnection(_sqlDbConnectionString))
             {
-                SqlCommand command = new SqlCommand(IdentifyCustomerStoredProcName, connection)
+                SqlCommand command = new SqlCommand(_identifyCustomerStoredProcName, connection)
                 {
                     CommandType = CommandType.StoredProcedure
                 };
@@ -55,7 +55,7 @@ namespace NCS.DSS.DataUtility.Services
 
             int impactedRows = 0;
 
-            using (SqlConnection connection = new SqlConnection(SqlDbConnectionString))
+            using (SqlConnection connection = new SqlConnection(_sqlDbConnectionString))
             {
                 string executionQuery =
                     // master data tables
@@ -113,7 +113,7 @@ namespace NCS.DSS.DataUtility.Services
 
             int impactedRows = 0;
 
-            using (SqlConnection connection = new SqlConnection(SqlDbConnectionString))
+            using (SqlConnection connection = new SqlConnection(_sqlDbConnectionString))
             {
                 string executionQuery =
                     // master data table
