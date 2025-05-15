@@ -9,7 +9,7 @@ namespace NCS.DSS.DataUtility.Services
     {
         private readonly ILogger<ServiceBusService> _logger;
         private readonly ServiceBusClient _serviceBusClient;
-        private readonly Dictionary<string, ServiceBusSender> senders = new Dictionary<string, ServiceBusSender>();
+        private readonly Dictionary<string, ServiceBusSender> _senders = new Dictionary<string, ServiceBusSender>();
 
         public ServiceBusService(ILogger<ServiceBusService> logger, ServiceBusClient serviceBusClient)
         {
@@ -49,12 +49,12 @@ namespace NCS.DSS.DataUtility.Services
 
         private ServiceBusSender GetServiceBusSender(string queueName)
         {
-            if (!senders.ContainsKey(queueName))
+            if (!_senders.ContainsKey(queueName))
             {
-                senders[queueName] = _serviceBusClient.CreateSender(queueName);
+                _senders[queueName] = _serviceBusClient.CreateSender(queueName);
             }
 
-            return senders[queueName];
+            return _senders[queueName];
         }
     }
 }
