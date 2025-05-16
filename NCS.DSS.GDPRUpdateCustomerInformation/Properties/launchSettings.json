@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "NCS.DSS.GDPRUpdateCustomerInformation": {
+    "NCS.DSS.DataUtility": {
       "commandName": "Project",
       "commandLineArgs": "--port 7085",
       "launchBrowser": false
