@@ -2,13 +2,46 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
+  "sharedAppServicePlanName": {
+      "type": "string"
+    },
+    "sharedAppServicePlanResourceGroup": {
+      "type": "string"
+    },
+    "templateBaseUrl": {
+      "type": "string"
+    },
+    "azureSQLConnectionString": {
+      "type": "string"
+    },
     "environmentName": {
       "type": "string"
+    },
+    "cosmosDbEndpoint": {
+      "type": "string"
+    },
+    "cosmosDbKey": {
+      "type": "securestring"
     },
     "functionAppNames": {
       "type": "array"
     },
+    "storageAccountName": {
+      "type": "string"
+    },
+    "storageAccountKey": {
+      "type": "string"
+    },
+    "GDPRUpdateCustomersStoredProcedureName": {
+      "type": "string"
+    },
     "GDPRIdentifyCustomersStoredProcedureName": {
+      "type": "string"
+    },
+    "workspaceName": {
+      "type": "string"
+    },
+    "workspaceResourceGroup": {
       "type": "string"
     },
     "appInsightsInstrumentationKey": {
