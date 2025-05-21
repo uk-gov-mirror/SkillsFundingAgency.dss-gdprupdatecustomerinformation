@@ -2,47 +2,14 @@
     "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "templateBaseUrl": {
-            "value": "__ParentArmTemplatePath__"
-        },
         "environmentName": {
             "value": "__ReleaseEnvironmentName__"
         },
         "functionAppNames": {
             "value": [ "__FunctionAppName__" ]
         },
-        "sharedAppServicePlanName": {
-            "value": "__SharedAppServicePlanName__"
-        },
-        "sharedAppServicePlanResourceGroup": {
-            "value": "__SharedAppServicePlanResourceGroup__"
-        },
-        "azureSQLConnectionString": {
-            "value": "__azureSQLConnectionString__"
-        },
-        "cosmosDbEndpoint": {
-            "value": "__CosmosDbEndpoint__"
-        },
-        "cosmosDbKey": {
-            "value": "__CosmosDbKey__"
-        },
-        "storageAccountName": {
-            "value": "__SharedStorageAccountKey__"
-        },
-        "storageAccountKey": {
-            "value": "__SharedStorageAccountKey__"
-        },
-        "GDPRUpdateCustomersStoredProcedureName": {
-            "value": "__GDPRUpdateCustomersStoredProcedureName__"
-        },
         "GDPRIdentifyCustomersStoredProcedureName": {
             "value": "__GDPRIdentifyCustomersStoredProcedureName__"
-        },
-        "workspaceName": {
-            "value": "__sharedLogAnalyticsWorkspace__"
-        },
-        "workspaceResourceGroup": {
-            "value": "__sharedLogAnalyticsResourceGroup__"
         },
         "appInsightsInstrumentationKey": {
             "value": "__appInsightsInstrumentationKey__" 

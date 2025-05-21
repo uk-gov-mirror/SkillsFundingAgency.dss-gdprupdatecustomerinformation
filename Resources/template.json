@@ -2,46 +2,13 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "sharedAppServicePlanName": {
-      "type": "string"
-    },
-    "sharedAppServicePlanResourceGroup": {
-      "type": "string"
-    },
-    "templateBaseUrl": {
-      "type": "string"
-    },
-    "azureSQLConnectionString": {
-      "type": "string"
-    },
     "environmentName": {
       "type": "string"
-    },
-    "cosmosDbEndpoint": {
-      "type": "string"
-    },
-    "cosmosDbKey": {
-      "type": "securestring"
     },
     "functionAppNames": {
       "type": "array"
     },
-    "storageAccountName": {
-      "type": "string"
-    },
-    "storageAccountKey": {
-      "type": "string"
-    },
-    "GDPRUpdateCustomersStoredProcedureName": {
-      "type": "string"
-    },
     "GDPRIdentifyCustomersStoredProcedureName": {
-      "type": "string"
-    },
-    "workspaceName": {
-      "type": "string"
-    },
-    "workspaceResourceGroup": {
       "type": "string"
     },
     "appInsightsInstrumentationKey": {
@@ -62,9 +29,9 @@
         "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
         "MSDEPLOY_RENAME_LOCKED_FILES": "1",
         "AzureWebJobsStorage": "[format('@Microsoft.KeyVault(VaultName={0};SecretName=SharedStorageAccountConnectionString)', parameters('keyVaultName'))]",
-        "AzureSQLConnectionString": "[parameters('azureSQLConnectionString')]",
+        "AzureSQLConnectionString": "[format('@Microsoft.KeyVault(VaultName={0};SecretName=AzureSQLConnectionString)', parameters('keyVaultName'))]",
         "APPINSIGHTS_INSTRUMENTATIONKEY": "[parameters('appInsightsInstrumentationKey')]",
-        "CosmosDBConnectionString": "[format('AccountEndpoint={0}/;AccountKey={1};', parameters('cosmosDbEndpoint'), parameters('cosmosDbKey'))]",
+        "CosmosDBConnectionString": "[format('@Microsoft.KeyVault(VaultName={0};SecretName=CosmosDBConnectionString)', parameters('keyVaultName'))]",
         "GDPRIdentifyCustomersStoredProcedureName": "[parameters('GDPRIdentifyCustomersStoredProcedureName')]",
         "ServiceBusConnectionString": "[format('@Microsoft.KeyVault(VaultName={0};SecretName=ServiceBusConnectionString)', parameters('keyVaultName'))]",
         "GdprQueueName": "Gdpr.Deletecustomerdata",
