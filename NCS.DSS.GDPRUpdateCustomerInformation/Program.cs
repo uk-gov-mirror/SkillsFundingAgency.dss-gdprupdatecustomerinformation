@@ -24,21 +24,15 @@ namespace NCS.DSS.DataUtility
                 services.AddSingleton<IServiceBusService, ServiceBusService>();
                 services.AddSingleton<ICosmosDatabaseService, CosmosDatabaseService>();
 
-                services.AddSingleton(sp =>
+                services.AddSingleton(sp => new CosmosClient(Environment.GetEnvironmentVariable("CosmosDBConnectionString"), new DefaultAzureCredential(), new CosmosClientOptions()
                 {
-                    var options = new CosmosClientOptions() { ConnectionMode = ConnectionMode.Gateway };
-                    return new CosmosClient(Environment.GetEnvironmentVariable("CosmosDBConnectionString"), new DefaultAzureCredential(), options);
-                });
+                    ConnectionMode = ConnectionMode.Gateway
+                }));
 
-                services.AddSingleton(sp =>
+                services.AddSingleton(sp => new ServiceBusClient(Environment.GetEnvironmentVariable("ServiceBusConnectionString"), new ServiceBusClientOptions
                 {
-                    ServiceBusClient client = new ServiceBusClient(Environment.GetEnvironmentVariable("ServiceBusConnectionString"), new ServiceBusClientOptions
-                    {
-                        TransportType = ServiceBusTransportType.AmqpWebSockets
-                    });
-
-                    return client;
-                });
+                    TransportType = ServiceBusTransportType.AmqpWebSockets
+                }));
 
                 services.Configure<LoggerFilterOptions>(options =>
                 {
