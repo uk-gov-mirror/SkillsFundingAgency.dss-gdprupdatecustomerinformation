@@ -62,12 +62,13 @@
         "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
         "MSDEPLOY_RENAME_LOCKED_FILES": "1",
         "AzureWebJobsStorage": "[format('@Microsoft.KeyVault(VaultName={0};SecretName=SharedStorageAccountConnectionString)', parameters('keyVaultName'))]",
-        "AzureSQLConnectionString": "[parameters('azureSQLConnectionString')]",
+        "AzureSQLConnectionString": "[format('@Microsoft.KeyVault(VaultName={0};SecretName=AzureSQLConnectionString)', parameters('keyVaultName'))]",
         "APPINSIGHTS_INSTRUMENTATIONKEY": "[parameters('appInsightsInstrumentationKey')]",
-        "CosmosDBConnectionString": "[format('AccountEndpoint={0}/;AccountKey={1};', parameters('cosmosDbEndpoint'), parameters('cosmosDbKey'))]",
+        "CosmosDBConnectionString": "[format('@Microsoft.KeyVault(VaultName={0};SecretName=CosmosDBConnectionString)', parameters('keyVaultName'))]",
         "GDPRIdentifyCustomersStoredProcedureName": "[parameters('GDPRIdentifyCustomersStoredProcedureName')]",
-        "GDPRUpdateCustomersStoredProcedureName": "[parameters('GDPRUpdateCustomersStoredProcedureName')]",
-        "CosmosDbEndpoint": "[parameters('cosmosDbEndpoint')]"
+        "ServiceBusConnectionString": "[format('@Microsoft.KeyVault(VaultName={0};SecretName=ServiceBusConnectionString)', parameters('keyVaultName'))]",
+        "GdprQueueName": "Gdpr.Deletecustomerdata",
+        "GdprTimerSchedule": "0 19,23 6-8 * *"
       },
       "copy": {
         "name": "FunctionAppSettingsCopy",
