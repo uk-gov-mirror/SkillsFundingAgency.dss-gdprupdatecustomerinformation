@@ -32,7 +32,7 @@ namespace NCS.DSS.DataUtility.Services
 
         public async Task DeleteRecordsForCustomer(Guid customerId)
         {
-            _logger.LogInformation($"{nameof(DeleteRecordsForCustomer)} function has been invoked");
+            _logger.LogInformation("{FunctionName} function has been invoked", nameof(DeleteRecordsForCustomer));
 
             var actionPlansTask = DeleteDocumentFromContainer(customerId, ActionPlansCosmosDb, ActionPlansCosmosDb);
             var actionsTask = DeleteDocumentFromContainer(customerId, ActionsCosmosDb, ActionsCosmosDb);
@@ -55,12 +55,12 @@ namespace NCS.DSS.DataUtility.Services
 
             await DeleteDocumentFromContainer(customerId, CustomerCosmosDb, CustomerCosmosDb);
 
-            _logger.LogInformation($"{nameof(DeleteRecordsForCustomer)} function has finished invocation");
+            _logger.LogInformation("{FunctionName} function has finished invoking", nameof(DeleteRecordsForCustomer));
         }
 
         private async Task DeleteDocumentFromContainer(Guid customerId, string databaseName, string containerName)
         {
-            _logger.LogInformation($"Attempting to retrieve documents associated with customer '{customerId.ToString()}' from container '{containerName}' from within database '{databaseName}'");
+            _logger.LogInformation("Attempting to retrieve documents associated with customer [{CustomerId}] from container '{ContainerName}' in database '{DatabaseName}'", customerId.ToString(), containerName, databaseName);
 
             Container cosmosDbContainer = _cosmosDbClient.GetContainer(databaseName, containerName);
 
@@ -83,29 +83,27 @@ namespace NCS.DSS.DataUtility.Services
 
             if (documentIds.Count > 0)
             {
-                _logger.LogInformation($"Customer ({customerId.ToString()}) has a total of {documentIds.Count.ToString()} '{containerName}' documents");
+                _logger.LogInformation("Customer [{CustomerId}] has {DocumentIdCount} document(s) in '{ContainerName}'", customerId.ToString(), documentIds.Count.ToString(), containerName);
                 int totalDeleted = 0;
 
                 foreach (var documentId in documentIds)
                 {
-                    using (ResponseMessage deleteRequestResponse = await cosmosDbContainer.DeleteItemStreamAsync(documentId, PartitionKey.None))
+                    using ResponseMessage deleteRequestResponse = await cosmosDbContainer.DeleteItemStreamAsync(documentId, PartitionKey.None);
+                    if (!deleteRequestResponse.IsSuccessStatusCode)
                     {
-                        if (!deleteRequestResponse.IsSuccessStatusCode)
-                        {
-                            _logger.LogWarning($"Failed to delete Document ({documentId}). Response code: {deleteRequestResponse.StatusCode.ToString()}. Error: {deleteRequestResponse.ErrorMessage}");
-                        }
-                        else
-                        {
-                            totalDeleted++;
-                        }
+                        _logger.LogWarning("Failed to delete document [{DocumentId}] in '{ContainerName}'. Response code: {ResponseCode}. Error: {ErrorMessage}", documentId, containerName, deleteRequestResponse.StatusCode.ToString(), deleteRequestResponse.ErrorMessage);
+                    }
+                    else
+                    {
+                        totalDeleted++;
                     }
                 }
 
-                _logger.LogInformation($"{totalDeleted.ToString()} / {documentIds.Count.ToString()} '{containerName}' documents have been deleted successfully");
+                _logger.LogInformation("{totalDeleted} / {DocumentIdsCount} documents have been deleted successfully in '{ContainerName}'", totalDeleted.ToString(), documentIds.Count.ToString(), containerName);
             }
             else
             {
-                _logger.LogWarning($"No documents of type '{containerName}' were found for customer '{customerId.ToString()}'");
+                _logger.LogInformation("No documents in '{ContainerName}' were found for customer [{CustomerId}]", containerName, customerId.ToString());
             }
         }
 

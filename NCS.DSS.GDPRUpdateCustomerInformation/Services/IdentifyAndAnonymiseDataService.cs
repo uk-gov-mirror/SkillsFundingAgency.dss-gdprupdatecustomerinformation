@@ -26,11 +26,11 @@ namespace NCS.DSS.DataUtility.Services
             await ExecuteUpdateStoredProcedureAsync();
         }
 
-        public async Task DeleteCustomersFromCosmos(List<Guid> CustomerIds)
+        public async Task DeleteCustomersFromCosmos(List<Guid> customerIds)
         {
-            if (CustomerIds != null)
+            if (customerIds != null)
             {
-                foreach (Guid customerId in CustomerIds)
+                foreach (Guid customerId in customerIds)
                 {
                     await _cosmosDBService.DeleteRecordsForCustomer(customerId);
                 }
@@ -44,67 +44,60 @@ namespace NCS.DSS.DataUtility.Services
 
         private async Task<List<Guid>> ExecuteIdentifyStoredProcedureAsync()
         {
-            using var command = new SqlCommand(_GDPRIdentifyCustomersStoredProcedureName, _sqlConnection)
-            {
-                CommandType = CommandType.StoredProcedure
-            };
-
-            _logger.LogInformation($"Attempting to execute the stored procedure: {_GDPRIdentifyCustomersStoredProcedureName}");
-            _logger.LogInformation("Opening a database connection...");
+            await using var command = new SqlCommand(_GDPRIdentifyCustomersStoredProcedureName, _sqlConnection);
+            command.CommandType = CommandType.StoredProcedure;
 
             try
             {
+                _logger.LogInformation("Opening the database connection");
                 await _sqlConnection.OpenAsync();
-                SqlDataReader reader = command.ExecuteReader();
+                _logger.LogInformation("Attempting to execute the stored procedure: {StoredProcName}", _GDPRIdentifyCustomersStoredProcedureName);
+                SqlDataReader reader = await command.ExecuteReaderAsync();
 
                 List<Guid> idList = new List<Guid>();
-                Guid id;
 
                 while (reader.Read())
                 {
-                    id = Guid.Parse(reader["ID"].ToString());
+                    var id = Guid.Parse(reader["ID"].ToString());
                     idList.Add(id);
                 }
 
-                _logger.LogInformation($"Finished executing the stored procedure: {_GDPRIdentifyCustomersStoredProcedureName}");
+                _logger.LogInformation("Finished executing the stored procedure: {StoredProcName}", _GDPRIdentifyCustomersStoredProcedureName);
                 return idList;
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Failed to execute the stored procedure ({_GDPRIdentifyCustomersStoredProcedureName}). Error: {ex.Message}");
+                _logger.LogError(ex, "Failed to execute the stored procedure: {StoredProcName}. Error: {ErrorMessage}", _GDPRIdentifyCustomersStoredProcedureName, ex.Message);
                 throw;
             }
             finally
             {
-                _logger.LogInformation("Closing a database connection...");
+                _logger.LogInformation("Closing the database connection");
                 await _sqlConnection.CloseAsync();
             }
         }
 
         private async Task ExecuteUpdateStoredProcedureAsync()
         {
-            using var command = new SqlCommand(_GDPRUpdateCustomersStoredProcedureName, _sqlConnection)
-            {
-                CommandType = CommandType.StoredProcedure
-            };
-
-            _logger.LogInformation($"Attempting to execute the stored procedure: {_GDPRUpdateCustomersStoredProcedureName}");
-            _logger.LogInformation("Opening a database connection...");
+            await using var command = new SqlCommand(_GDPRUpdateCustomersStoredProcedureName, _sqlConnection);
+            command.CommandType = CommandType.StoredProcedure;
 
             try
             {
+                _logger.LogInformation("Opening the database connection");
                 await _sqlConnection.OpenAsync();
+                _logger.LogInformation("Attempting to execute the stored procedure: {StoredProcName}", _GDPRUpdateCustomersStoredProcedureName);
                 await command.ExecuteNonQueryAsync();
-                _logger.LogInformation($"Finished executing the stored procedure: {_GDPRUpdateCustomersStoredProcedureName}");
+                _logger.LogInformation("Finished executing the stored procedure: {StoredProcName}", _GDPRUpdateCustomersStoredProcedureName);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Failed to execute the stored procedure ({_GDPRUpdateCustomersStoredProcedureName}). Error: {ex.Message}");
+                _logger.LogError(ex, "Failed to execute the stored procedure: {StoredProcName}. Error: {ErrorMessage}", _GDPRUpdateCustomersStoredProcedureName, ex.Message);
                 throw;
             }
             finally
             {
-                _logger.LogInformation("Closing a database connection...");
+                _logger.LogInformation("Closing the database connection");
                 await _sqlConnection.CloseAsync();
             }
         }

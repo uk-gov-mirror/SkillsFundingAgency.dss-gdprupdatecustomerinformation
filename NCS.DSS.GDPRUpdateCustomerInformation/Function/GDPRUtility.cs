@@ -26,38 +26,38 @@ namespace NCS.DSS.DataUtility.Function
         [FixedDelayRetry(3, "00:30:00")] 
         public async Task<IActionResult> RunAsync([TimerTrigger("0 2 1 5,11 *")] TimerInfo timer)
         {
-            _logger.LogInformation($"{nameof(GDPRUtility)} has been invoked");
-            _logger.LogInformation("Attempting to retrieve list of customer IDs");
+            const string functionName = nameof(GDPRUtility);
 
+            _logger.LogInformation("{FunctionName} has been invoked", functionName);
+            
             try
             {
+                _logger.LogInformation("Attempting to retrieve list of customer IDs");
                 List<Guid> customerIds = await _identifyAndAnonymiseDataService.ReturnCustomerIds();
 
-                if (customerIds.Count.Equals(0))
+                if (customerIds.Count == 0)
                 {
-                    _logger.LogInformation("All Customers are GDPR compliant.");
-                    return new EmptyResult();
+                    _logger.LogInformation("All customers are GDPR compliant");
+                    return new NoContentResult();
                 }
 
-                _logger.LogInformation($"A total of {customerIds.Count().ToString()} Customer IDs have been identified as being non-compliant with GDPR.");
+                _logger.LogInformation("{Count} customer ID(s) have been identified as being non-compliant with GDPR", customerIds.Count.ToString());
 
-                _logger.LogInformation("Attempting to anonymise data from SQL DB");
-
+                _logger.LogInformation("Attempting to anonymise data in SQL DB");
                 await _identifyAndAnonymiseDataService.AnonymiseData();
+                _logger.LogInformation("Successfully anonymised data in SQL DB");
 
-                _logger.LogInformation("Successfully anonymised data from SQL DB");
-
-                _logger.LogInformation("Attempting to delete related documents from Cosmos DB");
-
+                _logger.LogInformation("Attempting to delete documents in CosmosDB");
                 await _identifyAndAnonymiseDataService.DeleteCustomersFromCosmos(customerIds);
+                _logger.LogInformation("Successfully deleted documents in CosmosDB");
 
-                _logger.LogInformation($"{nameof(GDPRUtility)} has finished invocation successfully");
+                _logger.LogInformation("{FunctionName} has finished invoking successfully", functionName);
 
                 return new OkResult();
             }
             catch (Exception ex)
             {
-                _logger.LogError($"{nameof(GDPRUtility)} has failed to invoke. Error: {ex.Message}");
+                _logger.LogError(ex, "{FunctionName} has failed with error: {ErrorMessage}", functionName, ex.Message);
                 throw;
             }
         }
