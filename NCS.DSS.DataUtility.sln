@@ -5,7 +5,7 @@ VisualStudioVersion = 17.7.34221.43
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NCS.DSS.DataUtility", "NCS.DSS.GDPRUpdateCustomerInformation\NCS.DSS.DataUtility.csproj", "{505AAA75-D0B8-43D4-8A7B-26935F84A42B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NCS.DSS.GDPRUtility.Tests", "NCS.DSS.GDPRUpdateCustomerInformation.Tests\NCS.DSS.GDPRUtility.Tests.csproj", "{B65E6973-85D3-4002-BC80-D9889A78CF26}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NCS.DSS.DataUtility.Tests", "NCS.DSS.GDPRUpdateCustomerInformation.Tests\NCS.DSS.DataUtility.Tests.csproj", "{B65E6973-85D3-4002-BC80-D9889A78CF26}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
