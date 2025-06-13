@@ -64,7 +64,7 @@ namespace NCS.DSS.DataUtility.Functions
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogError(ex, "ERROR: Failed to send queue message in parallel. Exception: {exception}", ex.Message);
+                        _logger.LogError(ex, "ERROR: Failed to send queue message in parallel. Exception: {exception}. Customer ID: {customerId}", ex.Message, customerId);
                         Interlocked.Increment(ref _numberOfFailures);
                     }
                 });
