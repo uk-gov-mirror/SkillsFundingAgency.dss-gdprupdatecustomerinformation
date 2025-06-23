@@ -93,7 +93,10 @@ namespace NCS.DSS.DataUtility.Functions
 
                 if (cosmosFailureHasOccurred)
                 {
-                    _logger.LogWarning("Processing failure identified - moving originating message to dead letter queue");
+                    _logger.LogWarning(
+                        "Processing failure identified - moving originating message to dead letter queue. Customer ID: {customerId}"
+                        , queueBody.CustomerId.ToString()
+                    );
                     await messageActions.DeadLetterMessageAsync(message);
                 }
                 else
@@ -111,7 +114,13 @@ namespace NCS.DSS.DataUtility.Functions
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "INVOCATION ERROR ({functionName}): function has failed with exception: {exception}. Moving originating message to dead letter queue", nameof(DeleteCustomerData), ex.Message);
+                _logger.LogError(
+                    ex
+                    , "INVOCATION ERROR ({functionName}): function has failed with exception: {exception}. Moving originating message to dead letter queue. Customer ID: {customerId}"
+                    , nameof(DeleteCustomerData)
+                    , ex.Message
+                    , queueBody.CustomerId.ToString()
+                );
                 await messageActions.DeadLetterMessageAsync(message);
 
                 throw;
