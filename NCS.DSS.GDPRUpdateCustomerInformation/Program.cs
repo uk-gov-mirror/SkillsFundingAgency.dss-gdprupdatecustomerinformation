@@ -24,10 +24,34 @@ namespace NCS.DSS.DataUtility
                 services.AddSingleton<IServiceBusService, ServiceBusService>();
                 services.AddSingleton<ICosmosDatabaseService, CosmosDatabaseService>();
 
-                services.AddSingleton(sp => new CosmosClient(Environment.GetEnvironmentVariable("CosmosDBConnectionString"), new DefaultAzureCredential(), new CosmosClientOptions()
+                services.AddSingleton(sp =>
                 {
-                    ConnectionMode = ConnectionMode.Gateway
-                }));
+                    var logger = sp.GetRequiredService<ILogger<Program>>();
+
+
+                    var connectionString = Environment.GetEnvironmentVariable("AdviserDetailConnectionString");
+                    var endpoint = Environment.GetEnvironmentVariable("CosmosDbEndpoint");
+
+                    var options = new CosmosClientOptions
+                    {
+                        ConnectionMode = ConnectionMode.Gateway
+                    };
+
+                    if (!string.IsNullOrWhiteSpace(endpoint))
+                    {
+                        logger.LogInformation("Using DefaultAzureCredential for Cosmos DB (managed identity)");
+                        return new CosmosClient(endpoint, new DefaultAzureCredential(), options);
+                    }
+                    else if (!string.IsNullOrWhiteSpace(connectionString))
+                    {
+                        logger.LogInformation("No managed identity found: using Cosmos DB connection string (local development)");
+                        return new CosmosClient(connectionString, options);
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException("Neither CosmosDbEndpoint or a ConnectionString are configured");
+                    }
+                });
 
                 services.AddSingleton(sp => new ServiceBusClient(Environment.GetEnvironmentVariable("ServiceBusConnectionString"), new ServiceBusClientOptions
                 {
