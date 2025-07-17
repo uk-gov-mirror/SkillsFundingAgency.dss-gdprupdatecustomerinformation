@@ -5,6 +5,9 @@ using Microsoft.Extensions.Logging;
 using NCS.DSS.DataUtility.Interfaces;
 using NCS.DSS.DataUtility.Models;
 using Action = NCS.DSS.DataUtility.Models.Action;
+using Address = NCS.DSS.DataUtility.Models.Address;
+using Outcome = NCS.DSS.DataUtility.Models.Outcome;
+using Transfer = NCS.DSS.DataUtility.Models.Transfer;
 
 namespace NCS.DSS.DataUtility.Services
 {
