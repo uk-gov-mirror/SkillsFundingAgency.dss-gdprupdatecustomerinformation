@@ -29,7 +29,7 @@ namespace NCS.DSS.DataUtility
                     var logger = sp.GetRequiredService<ILogger<Program>>();
 
 
-                    var connectionString = Environment.GetEnvironmentVariable("AdviserDetailConnectionString");
+                    var connectionString = Environment.GetEnvironmentVariable("CosmosDBConnectionString");
                     var endpoint = Environment.GetEnvironmentVariable("CosmosDbEndpoint");
 
                     var options = new CosmosClientOptions
