@@ -131,8 +131,6 @@ namespace NCS.DSS.DataUtility.Services
                     command.Parameters.AddWithValue("@customerId", customerId.ToString());
                     impactedRows = await command.ExecuteNonQueryAsync();
                 }
-
-                connection.Close();
             }
 
             _logger.LogInformation($"{nameof(SqlDbService)} method '{nameof(PurgeCustomerDataAsync)}' has finished");
@@ -161,8 +159,6 @@ namespace NCS.DSS.DataUtility.Services
                     command.Parameters.AddWithValue("@recordId", recordId.ToString());
                     await command.ExecuteNonQueryAsync();
                 }
-
-                connection.Close();
             }
 
             _logger.LogInformation($"{nameof(SqlDbService)} method '{nameof(PurgeRecordDataAsync)}' has finished");
