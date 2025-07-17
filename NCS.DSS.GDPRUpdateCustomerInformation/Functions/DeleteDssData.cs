@@ -1,5 +1,4 @@
 using Azure.Messaging.ServiceBus;
-using Google.Protobuf.Reflection;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using NCS.DSS.DataUtility.Interfaces;
