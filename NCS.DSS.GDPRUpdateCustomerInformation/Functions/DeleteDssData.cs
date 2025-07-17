@@ -1,4 +1,5 @@
 using Azure.Messaging.ServiceBus;
+using Google.Protobuf.Reflection;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using NCS.DSS.DataUtility.Interfaces;
@@ -8,30 +9,49 @@ using System.Text;
 
 namespace NCS.DSS.DataUtility.Functions
 {
-    public class DeleteCustomerData
+    public class DeleteDSSData
     {
-        private readonly ILogger<DeleteCustomerData> _logger;
+        private readonly ILogger<DeleteDSSData> _logger;
         private readonly ICosmosDatabaseService _cosmosDatabaseService;
         private readonly ISqlDbService _sqlDbService;
 
-        public DeleteCustomerData(ILogger<DeleteCustomerData> logger, ICosmosDatabaseService cosmosDatabaseService, ISqlDbService sqlDbService)
+        public DeleteDSSData(ILogger<DeleteDSSData> logger, ICosmosDatabaseService cosmosDatabaseService, ISqlDbService sqlDbService)
         {
             _logger = logger;
             _cosmosDatabaseService = cosmosDatabaseService;
             _sqlDbService = sqlDbService;
         }
 
-        [Function(nameof(DeleteCustomerData))]
+        [Function(nameof(DeleteDSSData))]
         public async Task Run(
             [ServiceBusTrigger("%GdprQueueName%", Connection = "ServiceBusConnectionString", AutoCompleteMessages = false)]
             ServiceBusReceivedMessage message,
             ServiceBusMessageActions messageActions
         )
         {
-            _logger.LogInformation($"Function '{nameof(DeleteCustomerData)}' has been invoked");
+            _logger.LogInformation($"Function '{nameof(DeleteDSSData)}' has been invoked");
 
             // convert queue message into usage object
             var bodyText = Encoding.UTF8.GetString(message.Body);
+
+            switch (bodyText)
+            {
+                case string customer when bodyText.ToLower().Contains("customerid"):
+                    await deleteCustomerData(message, messageActions, bodyText);
+                    break;
+                case string adviserdetail when bodyText.ToLower().Contains("adviserdetailid"):
+                    await deleteAdviserDetailData(message, messageActions, bodyText);
+                    break;
+                case string collection when bodyText.ToLower().Contains("collectionid"):
+                    await deleteCollectionData(message, messageActions, bodyText);
+                    break;
+            }
+
+            _logger.LogInformation($"Function '{nameof(DeleteDSSData)}' has finished invocation");
+        }
+
+        public async Task deleteCustomerData(ServiceBusReceivedMessage message, ServiceBusMessageActions messageActions, string bodyText)
+        {
             DeleteCustomerQueueMessage queueBody = JsonConvert.DeserializeObject<DeleteCustomerQueueMessage>(bodyText);
 
             _logger.LogInformation($"Customer with ID '{queueBody.CustomerId.ToString()}' will now be processed");
@@ -72,9 +92,9 @@ namespace NCS.DSS.DataUtility.Functions
                     || !customerCosmosDB.processedSuccessfully;
 
                 int totalDocumentCount = TotalCounter(actionPlanCosmosDB.impactedRecordCount, actionCosmosDB.impactedRecordCount, addressCosmosDB.impactedRecordCount,
-                    contactDetailCosmosDB.impactedRecordCount, diversityDetailCosmosDB.impactedRecordCount, employmentProgressionCosmosDB.impactedRecordCount, 
-                    goalCosmosDB.impactedRecordCount, interactionCosmosDB.impactedRecordCount, learningProgressionCosmosDB.impactedRecordCount, 
-                    outcomeCosmosDB.impactedRecordCount, sessionCosmosDB.impactedRecordCount, subscriptionCosmosDB.impactedRecordCount, transferCosmosDB.impactedRecordCount, 
+                    contactDetailCosmosDB.impactedRecordCount, diversityDetailCosmosDB.impactedRecordCount, employmentProgressionCosmosDB.impactedRecordCount,
+                    goalCosmosDB.impactedRecordCount, interactionCosmosDB.impactedRecordCount, learningProgressionCosmosDB.impactedRecordCount,
+                    outcomeCosmosDB.impactedRecordCount, sessionCosmosDB.impactedRecordCount, subscriptionCosmosDB.impactedRecordCount, transferCosmosDB.impactedRecordCount,
                     webchatCosmosDB.impactedRecordCount, customerCosmosDB.impactedRecordCount
                 );
 
@@ -117,7 +137,7 @@ namespace NCS.DSS.DataUtility.Functions
                 _logger.LogError(
                     ex
                     , "INVOCATION ERROR ({functionName}): function has failed with exception: {exception}. Moving originating message to dead letter queue. Customer ID: {customerId}"
-                    , nameof(DeleteCustomerData)
+                    , nameof(DeleteDSSData)
                     , ex.Message
                     , queueBody.CustomerId.ToString()
                 );
@@ -125,8 +145,106 @@ namespace NCS.DSS.DataUtility.Functions
 
                 throw;
             }
+        }
 
-            _logger.LogInformation($"Function '{nameof(DeleteCustomerData)}' has finished invocation");
+        public async Task deleteAdviserDetailData(ServiceBusReceivedMessage message, ServiceBusMessageActions messageActions, string bodyText)
+        {
+
+            DeleteAdviserDetailQueueMessage queueBody = JsonConvert.DeserializeObject<DeleteAdviserDetailQueueMessage>(bodyText);
+            _logger.LogInformation($"Adviser Detail with ID '{queueBody.AdviserDetailId.ToString()}' will now be processed");
+
+            try
+            {
+
+                //Purge from CosmosDB
+                var adviserDetailsCosmosDeletionSuccessful = await _cosmosDatabaseService.PurgeDocumentFromCosmosAsync(queueBody.AdviserDetailId, "adviserdetails", "adviserdetails");
+
+                string successText = !adviserDetailsCosmosDeletionSuccessful ? "no" : "yes";
+                _logger.LogInformation($">> Cosmos DB purge outcome for adviser detail '{queueBody.AdviserDetailId.ToString()}' <<");
+                _logger.LogInformation($"- Successfully processed? '{successText}'");
+
+                if (!adviserDetailsCosmosDeletionSuccessful)
+                {
+                    _logger.LogWarning(
+                            "Processing failure identified - moving originating message to dead letter queue. AdviserDetail ID: {adviserdetailId}"
+                            , queueBody.AdviserDetailId.ToString()
+                        );
+                    await messageActions.DeadLetterMessageAsync(message);
+                }
+                else
+                {
+                    //Purge from SqlDB
+                    await _sqlDbService.PurgeRecordDataAsync(queueBody.AdviserDetailId, "adviserdetails");
+                    _logger.LogInformation($">> SQL DB purge outcome for adviser detail '{queueBody.AdviserDetailId.ToString()}' <<");
+                    _logger.LogInformation($"- Successfully processed? 'yes'"); // exception would be thrown if not successful
+
+                    _logger.LogInformation("Processing succeeded - completing message");
+                    await messageActions.CompleteMessageAsync(message);
+                }
+            }
+            catch (Exception ex) 
+            {
+                _logger.LogError(
+                    ex
+                    , "INVOCATION ERROR ({functionName}): function has failed with exception: {exception}. Moving originating message to dead letter queue. Adviser Detail ID: {adviserdetailId}"
+                    , nameof(DeleteDSSData)
+                    , ex.Message
+                    , queueBody.AdviserDetailId.ToString()
+                );
+                await messageActions.DeadLetterMessageAsync(message);
+
+                throw;
+            }      
+        }
+
+        public async Task deleteCollectionData(ServiceBusReceivedMessage message, ServiceBusMessageActions messageActions, string bodyText)
+        {
+            DeleteCollectionQueueMessage queueBody = JsonConvert.DeserializeObject<DeleteCollectionQueueMessage>(bodyText);
+            _logger.LogInformation($"Collection with ID '{queueBody.CollectionId.ToString()}' will now be processed");
+
+            try
+            {
+
+                //Purge from CosmosDB
+                var collectionsCosmosDeletionSuccessful = await _cosmosDatabaseService.PurgeDocumentFromCosmosAsync(queueBody.CollectionId, "collections", "collections");
+
+                string successText = !collectionsCosmosDeletionSuccessful ? "no" : "yes";
+                _logger.LogInformation($">> Cosmos DB purge outcome for collection '{queueBody.CollectionId.ToString()}' <<");
+                _logger.LogInformation($"- Successfully processed? '{successText}'");
+
+                if (!collectionsCosmosDeletionSuccessful)
+                {
+                    _logger.LogWarning(
+                            "Processing failure identified - moving originating message to dead letter queue. Collection ID: {collectionId}"
+                            , queueBody.CollectionId.ToString()
+                        );
+                    await messageActions.DeadLetterMessageAsync(message);
+                }
+                else
+                {
+                    //Purge from SqlDB
+                    await _sqlDbService.PurgeRecordDataAsync(queueBody.CollectionId, "collections");
+                    _logger.LogInformation($">> SQL DB purge outcome for collection '{queueBody.CollectionId.ToString()}' <<");
+                    _logger.LogInformation($"- Successfully processed? 'yes'"); // exception would be thrown if not successful
+
+                    _logger.LogInformation("Processing succeeded - completing message");
+                    await messageActions.CompleteMessageAsync(message);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(
+                    ex
+                    , "INVOCATION ERROR ({functionName}): function has failed with exception: {exception}. Moving originating message to dead letter queue. Collection ID: {collectionId}"
+                    , nameof(DeleteDSSData)
+                    , ex.Message
+                    , queueBody.CollectionId.ToString()
+                );
+                await messageActions.DeadLetterMessageAsync(message);
+
+                throw;
+            }
+
         }
 
         private static int TotalCounter(params int[] input)

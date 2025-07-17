@@ -131,10 +131,41 @@ namespace NCS.DSS.DataUtility.Services
                     command.Parameters.AddWithValue("@customerId", customerId.ToString());
                     impactedRows = await command.ExecuteNonQueryAsync();
                 }
+
+                connection.Close();
             }
 
             _logger.LogInformation($"{nameof(SqlDbService)} method '{nameof(PurgeCustomerDataAsync)}' has finished");
             return impactedRows;
+        }
+
+        public async Task PurgeRecordDataAsync(Guid recordId, string tableName)
+        {
+            _logger.LogInformation($"{nameof(SqlDbService)} method '{nameof(PurgeRecordDataAsync)}' has been called");
+
+            using (SqlConnection connection = new SqlConnection(_sqlDbConnectionString))
+            {
+                string executionQuery =
+                    // master data table
+                    @"DELETE FROM [dss-" + @tableName + "] WHERE id=@recordId;" +
+
+                     // history table
+                     "DELETE FROM [dss-" + @tableName + "-history] WHERE id=@recordId;";
+
+                connection.Open();
+
+                using (SqlCommand command = new SqlCommand(executionQuery, connection))
+                {
+                    _logger.LogInformation($"Executing the DELETE query ({tableName} table)");
+
+                    command.Parameters.AddWithValue("@recordId", recordId.ToString());
+                    await command.ExecuteNonQueryAsync();
+                }
+
+                connection.Close();
+            }
+
+            _logger.LogInformation($"{nameof(SqlDbService)} method '{nameof(PurgeRecordDataAsync)}' has finished");
         }
     }
 }
