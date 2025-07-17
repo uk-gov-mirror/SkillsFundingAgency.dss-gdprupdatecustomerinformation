@@ -322,23 +322,6 @@ namespace NCS.DSS.DataUtility.Services
             return !failureOccurred;
         }
 
-        public async Task<bool> PurgeCollectionAsync(Guid collectionId)
-        {
-            Container cosmosDbContainer = _cosmosDbClient.GetContainer("collections", "collections");
-
-            bool failureOccurred = false;
-
-            bool success = await DeleteCosmosDocumentAsync(collectionId.ToString(), cosmosDbContainer);
-
-            if (!success)
-            {
-                failureOccurred = true;
-
-            }
-
-            return !failureOccurred;
-        }
-
         // Used by the Cosmos Bulk Delete function
         public async Task DeleteGenericRecordsFromContainer(string databaseName, string containerName, string field, string value, bool int_bool)
         {
