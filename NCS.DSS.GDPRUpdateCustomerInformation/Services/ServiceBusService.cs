@@ -1,7 +1,7 @@
 ﻿using Azure.Messaging.ServiceBus;
 using Microsoft.Extensions.Logging;
 using NCS.DSS.DataUtility.Interfaces;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace NCS.DSS.DataUtility.Services
 {
@@ -24,7 +24,7 @@ namespace NCS.DSS.DataUtility.Services
 
             ServiceBusSender serviceBusSender = GetServiceBusSender(queueName);
 
-            string jsonSerialized = JsonConvert.SerializeObject(messageBody);
+            string jsonSerialized = JsonSerializer.Serialize(messageBody);
             byte[] jsonAsByteArray = System.Text.Encoding.UTF8.GetBytes(jsonSerialized);
 
             ServiceBusMessage message = new ServiceBusMessage(jsonAsByteArray)
@@ -35,16 +35,15 @@ namespace NCS.DSS.DataUtility.Services
             try
             {
                 await serviceBusSender.SendMessageAsync(message);
+
+                _logger.LogInformation($"Message was sent successfully");
+                return true;
             }
             catch (Exception ex)
             {
                 _logger.LogWarning($"Unable to send message to queue. Exception: {ex.Message}");
                 return false;
-            }
-
-            _logger.LogInformation($"Message was sent successfully");
-
-            return true;
+            }          
         }
 
         private ServiceBusSender GetServiceBusSender(string queueName)
