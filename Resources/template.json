@@ -49,6 +49,9 @@
     },
     "keyVaultName": {
       "type": "string"
+    },
+	"CosmosDbEndpoint": {
+      "type": "string"
     }
   },
   "resources": [
@@ -68,7 +71,8 @@
         "GDPRIdentifyCustomersStoredProcedureName": "[parameters('GDPRIdentifyCustomersStoredProcedureName')]",
         "ServiceBusConnectionString": "[format('@Microsoft.KeyVault(VaultName={0};SecretName=ServiceBusConnectionString)', parameters('keyVaultName'))]",
         "GdprQueueName": "Gdpr.Deletecustomerdata",
-        "GdprTimerSchedule": "0 19 6-8 * *"
+        "GdprTimerSchedule": "0 19 6-8 * *",
+		"CosmosDbEndpoint": "[parameters('CosmosDbEndpoint')]"
       },
       "copy": {
         "name": "FunctionAppSettingsCopy",
