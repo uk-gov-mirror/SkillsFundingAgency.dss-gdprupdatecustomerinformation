@@ -32,6 +32,8 @@
 
         Task<(bool processedSuccessfully, int impactedRecordCount)> PurgeWebchatsForCustomerAsync(Guid customerId);
 
+        Task<bool> PurgeDocumentFromCosmosAsync(Guid documentId, string databaseId, string containerId);
+
         Task DeleteGenericRecordsFromContainer(string databaseName, string containerName, string field, string value, bool int_bool);
     }
 }

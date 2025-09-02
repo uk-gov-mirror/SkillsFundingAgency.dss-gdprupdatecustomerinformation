@@ -1,9 +1,13 @@
-﻿using Microsoft.Azure.Cosmos;
+﻿using Microsoft.Azure.Amqp.Framing;
+using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Cosmos.Linq;
 using Microsoft.Extensions.Logging;
 using NCS.DSS.DataUtility.Interfaces;
 using NCS.DSS.DataUtility.Models;
 using Action = NCS.DSS.DataUtility.Models.Action;
+using Address = NCS.DSS.DataUtility.Models.Address;
+using Outcome = NCS.DSS.DataUtility.Models.Outcome;
+using Transfer = NCS.DSS.DataUtility.Models.Transfer;
 
 namespace NCS.DSS.DataUtility.Services
 {
@@ -59,7 +63,7 @@ namespace NCS.DSS.DataUtility.Services
         public async Task<(bool processedSuccessfully, int impactedRecordCount)> PurgeAddressesForCustomerAsync(Guid customerId)
         {
             Container cosmosDbContainer = _cosmosDbClient.GetContainer("addresses", "addresses");
-            List<Address> addresses = await RetrieveAddressesForCustomerAsync(customerId, cosmosDbContainer);
+            List<Models.Address> addresses = await RetrieveAddressesForCustomerAsync(customerId, cosmosDbContainer);
             bool failureOccurred = false;
 
             foreach (var address in addresses)
@@ -302,6 +306,23 @@ namespace NCS.DSS.DataUtility.Services
             }
 
             return (!failureOccurred, webchats.Count());
+        }
+
+        public async Task<bool> PurgeDocumentFromCosmosAsync(Guid documentId, string databaseId, string containerId)
+        {
+            Container cosmosDbContainer = _cosmosDbClient.GetContainer(databaseId, containerId);
+
+            bool failureOccurred = false;
+
+            bool success = await DeleteCosmosDocumentAsync(documentId.ToString(), cosmosDbContainer);
+
+            if (!success)
+            {
+                failureOccurred = true;
+
+            }
+
+            return !failureOccurred;
         }
 
         // Used by the Cosmos Bulk Delete function
