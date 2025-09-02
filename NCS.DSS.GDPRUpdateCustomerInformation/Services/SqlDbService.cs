@@ -96,7 +96,7 @@ namespace NCS.DSS.DataUtility.Services
                 {
                     _logger.LogInformation($"Executing the DELETE query (master and history tables)");
 
-                    command.Parameters.AddWithValue("@customerId", customerId.ToString());
+                    command.Parameters.Add("@customerId", SqlDbType.UniqueIdentifier).Value = customerId;
                     impactedRows = await command.ExecuteNonQueryAsync();
                 }
             }
@@ -128,7 +128,7 @@ namespace NCS.DSS.DataUtility.Services
                 {
                     _logger.LogInformation($"Executing the DELETE query (customer table)");
 
-                    command.Parameters.AddWithValue("@customerId", customerId.ToString());
+                    command.Parameters.Add("@customerId", SqlDbType.UniqueIdentifier).Value = customerId;
                     impactedRows = await command.ExecuteNonQueryAsync();
                 }
             }
