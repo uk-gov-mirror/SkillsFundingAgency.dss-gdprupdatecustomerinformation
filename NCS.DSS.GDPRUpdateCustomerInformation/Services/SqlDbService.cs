@@ -145,10 +145,10 @@ namespace NCS.DSS.DataUtility.Services
             {
                 string executionQuery =
                     // master data table
-                    @"DELETE FROM [dss-" + @tableName + "] WHERE id=@recordId;" +
+                    @"DELETE FROM [dss-" + @tableName + "] WHERE id=@recordId OPTION (MAXDOP 1);" +
 
                      // history table
-                     "DELETE FROM [dss-" + @tableName + "-history] WHERE id=@recordId;";
+                     "DELETE FROM [dss-" + @tableName + "-history] WHERE id=@recordId OPTION (MAXDOP 1);";
 
                 connection.Open();
 
