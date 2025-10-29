@@ -374,29 +374,20 @@ namespace NCS.DSS.DataUtility.Services
 
             if (documentIds.Count > 0)
             {
-                _logger.LogInformation($"Container '{containerName}' has a total of {documentIds.Count} matching records/documents");
+                _logger.LogInformation("Container '{ContainerName}' has a total of {DocumentCount} matching records/documents", containerName, documentIds.Count);
                 
-                var deleteTasks = documentIds.Select(async documentId =>
-                {
-                    using (ResponseMessage deleteRequestResponse = await cosmosDbContainer.DeleteItemStreamAsync(documentId, PartitionKey.None))
-                    {
-                        if (!deleteRequestResponse.IsSuccessStatusCode)
-                        {
-                            _logger.LogWarning($"Failed to delete Cosmos record/document with documentId: '{documentId}'. Response code: {deleteRequestResponse.StatusCode}. Error: {deleteRequestResponse.ErrorMessage}");
-                            return false;
-                        }
-                        return true;
-                    }
-                });
+                var deleteTasks = documentIds.Select(documentId => 
+                    DeleteDocumentWithLoggingAsync(documentId, cosmosDbContainer, containerName)
+                );
 
                 bool[] results = await Task.WhenAll(deleteTasks);
                 int totalDeleted = results.Count(success => success);
 
-                _logger.LogInformation($"{totalDeleted} / {documentIds.Count} '{containerName}' records/documents have been deleted successfully");
+                _logger.LogInformation("{DeletedCount} / {TotalCount} '{ContainerName}' records/documents have been deleted successfully", totalDeleted, documentIds.Count, containerName);
             }
             else
             {
-                _logger.LogWarning($"No Cosmos records/documents with value '{value}' for field '{field}' were found");
+                _logger.LogWarning("No Cosmos records/documents with value '{Value}' for field '{Field}' were found", value, field);
             }
         }
 
@@ -819,6 +810,19 @@ namespace NCS.DSS.DataUtility.Services
                 _logger.LogInformation("Processing complete");
 
                 return new Customer { CustomerId = customerId };
+            }
+        }
+
+        private async Task<bool> DeleteDocumentWithLoggingAsync(string documentId, Container cosmosDbContainer, string containerName)
+        {
+            using (ResponseMessage deleteRequestResponse = await cosmosDbContainer.DeleteItemStreamAsync(documentId, PartitionKey.None))
+            {
+                if (!deleteRequestResponse.IsSuccessStatusCode)
+                {
+                    _logger.LogWarning("Failed to delete Cosmos record/document with documentId: '{DocumentId}'. Response code: {StatusCode}. Error: {ErrorMessage}", documentId, deleteRequestResponse.StatusCode, deleteRequestResponse.ErrorMessage);
+                    return false;
+                }
+                return true;
             }
         }
     }
