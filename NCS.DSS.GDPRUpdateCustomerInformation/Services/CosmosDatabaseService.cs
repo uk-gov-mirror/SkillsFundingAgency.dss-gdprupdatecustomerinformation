@@ -26,76 +26,80 @@ namespace NCS.DSS.DataUtility.Services
         {
             Container cosmosDbContainer = _cosmosDbClient.GetContainer("actionplans", "actionplans");
             List<ActionPlan> actionPlans = await RetrieveActionPlansForCustomerAsync(customerId, cosmosDbContainer);
-            bool failureOccurred = false;
-
-            foreach (var actionPlan in actionPlans)
+            
+            if (actionPlans.Count == 0)
             {
-                bool success = await DeleteCosmosDocumentAsync(actionPlan.ActionPlanId.ToString(), cosmosDbContainer);
-
-                if (!success)
-                {
-                    failureOccurred = true;
-                }
+                return (true, 0);
             }
 
-            return (!failureOccurred, actionPlans.Count()); // if failureOccurred == true, processedSuccessfully needs to == false
+            var deleteTasks = actionPlans.Select(actionPlan => 
+                DeleteCosmosDocumentAsync(actionPlan.ActionPlanId.ToString(), cosmosDbContainer)
+            );
+            
+            bool[] results = await Task.WhenAll(deleteTasks);
+            bool failureOccurred = results.Any(success => !success);
+
+            return (!failureOccurred, actionPlans.Count);
         }
 
         public async Task<(bool processedSuccessfully, int impactedRecordCount)> PurgeActionsForCustomerAsync(Guid customerId)
         {
             Container cosmosDbContainer = _cosmosDbClient.GetContainer("actions", "actions");
             List<Action> actions = await RetrieveActionsForCustomerAsync(customerId, cosmosDbContainer);
-            bool failureOccurred = false;
-
-            foreach (var action in actions)
+            
+            if (actions.Count == 0)
             {
-                bool success = await DeleteCosmosDocumentAsync(action.ActionId.ToString(), cosmosDbContainer);
-
-                if (!success)
-                {
-                    failureOccurred = true;
-                }
+                return (true, 0);
             }
 
-            return (!failureOccurred, actions.Count());
+            var deleteTasks = actions.Select(action => 
+                DeleteCosmosDocumentAsync(action.ActionId.ToString(), cosmosDbContainer)
+            );
+            
+            bool[] results = await Task.WhenAll(deleteTasks);
+            bool failureOccurred = results.Any(success => !success);
+
+            return (!failureOccurred, actions.Count);
         }
 
         public async Task<(bool processedSuccessfully, int impactedRecordCount)> PurgeAddressesForCustomerAsync(Guid customerId)
         {
             Container cosmosDbContainer = _cosmosDbClient.GetContainer("addresses", "addresses");
             List<Models.Address> addresses = await RetrieveAddressesForCustomerAsync(customerId, cosmosDbContainer);
-            bool failureOccurred = false;
-
-            foreach (var address in addresses)
+            
+            if (addresses.Count == 0)
             {
-                bool success = await DeleteCosmosDocumentAsync(address.AddressId.ToString(), cosmosDbContainer);
-
-                if (!success)
-                {
-                    failureOccurred = true;
-                }
+                return (true, 0);
             }
 
-            return (!failureOccurred, addresses.Count());
+            var deleteTasks = addresses.Select(address => 
+                DeleteCosmosDocumentAsync(address.AddressId.ToString(), cosmosDbContainer)
+            );
+            
+            bool[] results = await Task.WhenAll(deleteTasks);
+            bool failureOccurred = results.Any(success => !success);
+
+            return (!failureOccurred, addresses.Count);
         }
 
         public async Task<(bool processedSuccessfully, int impactedRecordCount)> PurgeContactDetailsForCustomerAsync(Guid customerId)
         {
             Container cosmosDbContainer = _cosmosDbClient.GetContainer("contacts", "contacts");
             List<ContactDetail> contactDetails = await RetrieveContactDetailsForCustomerAsync(customerId, cosmosDbContainer);
-            bool failureOccurred = false;
-
-            foreach (var contactDetail in contactDetails)
+            
+            if (contactDetails.Count == 0)
             {
-                bool success = await DeleteCosmosDocumentAsync(contactDetail.ContactId.ToString(), cosmosDbContainer);
-
-                if (!success)
-                {
-                    failureOccurred = true;
-                }
+                return (true, 0);
             }
 
-            return (!failureOccurred, contactDetails.Count());
+            var deleteTasks = contactDetails.Select(contactDetail => 
+                DeleteCosmosDocumentAsync(contactDetail.ContactId.ToString(), cosmosDbContainer)
+            );
+            
+            bool[] results = await Task.WhenAll(deleteTasks);
+            bool failureOccurred = results.Any(success => !success);
+
+            return (!failureOccurred, contactDetails.Count);
         }
 
         public async Task<(bool processedSuccessfully, int impactedRecordCount)> PurgeCustomerRecordAsync(Guid customerId)
@@ -122,190 +126,200 @@ namespace NCS.DSS.DataUtility.Services
         {
             Container cosmosDbContainer = _cosmosDbClient.GetContainer("diversitydetails", "diversitydetails");
             List<DiversityDetail> diversityDetails = await RetrieveDiversityDetailsForCustomerAsync(customerId, cosmosDbContainer);
-            bool failureOccurred = false;
-
-            foreach (var diversityDetail in diversityDetails)
+            
+            if (diversityDetails.Count == 0)
             {
-                bool success = await DeleteCosmosDocumentAsync(diversityDetail.DiversityId.ToString(), cosmosDbContainer);
-
-                if (!success)
-                {
-                    failureOccurred = true;
-                }
+                return (true, 0);
             }
 
-            return (!failureOccurred, diversityDetails.Count());
+            var deleteTasks = diversityDetails.Select(diversityDetail => 
+                DeleteCosmosDocumentAsync(diversityDetail.DiversityId.ToString(), cosmosDbContainer)
+            );
+            
+            bool[] results = await Task.WhenAll(deleteTasks);
+            bool failureOccurred = results.Any(success => !success);
+
+            return (!failureOccurred, diversityDetails.Count);
         }
 
         public async Task<(bool processedSuccessfully, int impactedRecordCount)> PurgeEmploymentProgressionsForCustomerAsync(Guid customerId)
         {
             Container cosmosDbContainer = _cosmosDbClient.GetContainer("employmentprogressions", "employmentprogressions");
             List<EmploymentProgression> employmentProgressions = await RetrieveEmploymentProgressionsForCustomerAsync(customerId, cosmosDbContainer);
-            bool failureOccurred = false;
-
-            foreach (var employmentProgression in employmentProgressions)
+            
+            if (employmentProgressions.Count == 0)
             {
-                bool success = await DeleteCosmosDocumentAsync(employmentProgression.EmploymentProgressionId.ToString(), cosmosDbContainer);
-
-                if (!success)
-                {
-                    failureOccurred = true;
-                }
+                return (true, 0);
             }
 
-            return (!failureOccurred, employmentProgressions.Count());
+            var deleteTasks = employmentProgressions.Select(employmentProgression => 
+                DeleteCosmosDocumentAsync(employmentProgression.EmploymentProgressionId.ToString(), cosmosDbContainer)
+            );
+            
+            bool[] results = await Task.WhenAll(deleteTasks);
+            bool failureOccurred = results.Any(success => !success);
+
+            return (!failureOccurred, employmentProgressions.Count);
         }
 
         public async Task<(bool processedSuccessfully, int impactedRecordCount)> PurgeGoalsForCustomerAsync(Guid customerId)
         {
             Container cosmosDbContainer = _cosmosDbClient.GetContainer("goals", "goals");
             List<Goal> goals = await RetrieveGoalsForCustomerAsync(customerId, cosmosDbContainer);
-            bool failureOccurred = false;
-
-            foreach (var goal in goals)
+            
+            if (goals.Count == 0)
             {
-                bool success = await DeleteCosmosDocumentAsync(goal.GoalId.ToString(), cosmosDbContainer);
-
-                if (!success)
-                {
-                    failureOccurred = true;
-                }
+                return (true, 0);
             }
 
-            return (!failureOccurred, goals.Count());
+            var deleteTasks = goals.Select(goal => 
+                DeleteCosmosDocumentAsync(goal.GoalId.ToString(), cosmosDbContainer)
+            );
+            
+            bool[] results = await Task.WhenAll(deleteTasks);
+            bool failureOccurred = results.Any(success => !success);
+
+            return (!failureOccurred, goals.Count);
         }
 
         public async Task<(bool processedSuccessfully, int impactedRecordCount)> PurgeInteractionsForCustomerAsync(Guid customerId)
         {
             Container cosmosDbContainer = _cosmosDbClient.GetContainer("interactions", "interactions");
             List<Interaction> interactions = await RetrieveInteractionsForCustomerAsync(customerId, cosmosDbContainer);
-            bool failureOccurred = false;
-
-            foreach (var interaction in interactions)
+            
+            if (interactions.Count == 0)
             {
-                bool success = await DeleteCosmosDocumentAsync(interaction.InteractionId.ToString(), cosmosDbContainer);
-
-                if (!success)
-                {
-                    failureOccurred = true;
-                }
+                return (true, 0);
             }
 
-            return (!failureOccurred, interactions.Count());
+            var deleteTasks = interactions.Select(interaction => 
+                DeleteCosmosDocumentAsync(interaction.InteractionId.ToString(), cosmosDbContainer)
+            );
+            
+            bool[] results = await Task.WhenAll(deleteTasks);
+            bool failureOccurred = results.Any(success => !success);
+
+            return (!failureOccurred, interactions.Count);
         }
 
         public async Task<(bool processedSuccessfully, int impactedRecordCount)> PurgeLearningProgressionsForCustomerAsync(Guid customerId)
         {
             Container cosmosDbContainer = _cosmosDbClient.GetContainer("learningprogressions", "learningprogressions");
             List<LearningProgression> learningProgressions = await RetrieveLearningProgressionsForCustomerAsync(customerId, cosmosDbContainer);
-            bool failureOccurred = false;
-
-            foreach (var learningProgression in learningProgressions)
+            
+            if (learningProgressions.Count == 0)
             {
-                bool success = await DeleteCosmosDocumentAsync(learningProgression.LearningProgressionId.ToString(), cosmosDbContainer);
-
-                if (!success)
-                {
-                    failureOccurred = true;
-                }
+                return (true, 0);
             }
 
-            return (!failureOccurred, learningProgressions.Count());
+            var deleteTasks = learningProgressions.Select(learningProgression => 
+                DeleteCosmosDocumentAsync(learningProgression.LearningProgressionId.ToString(), cosmosDbContainer)
+            );
+            
+            bool[] results = await Task.WhenAll(deleteTasks);
+            bool failureOccurred = results.Any(success => !success);
+
+            return (!failureOccurred, learningProgressions.Count);
         }
 
         public async Task<(bool processedSuccessfully, int impactedRecordCount)> PurgeOutcomesForCustomerAsync(Guid customerId)
         {
             Container cosmosDbContainer = _cosmosDbClient.GetContainer("outcomes", "outcomes");
             List<Outcome> outcomes = await RetrieveOutcomesForCustomerAsync(customerId, cosmosDbContainer);
-            bool failureOccurred = false;
-
-            foreach (var outcome in outcomes)
+            
+            if (outcomes.Count == 0)
             {
-                bool success = await DeleteCosmosDocumentAsync(outcome.OutcomeId.ToString(), cosmosDbContainer);
-
-                if (!success)
-                {
-                    failureOccurred = true;
-                }
+                return (true, 0);
             }
 
-            return (!failureOccurred, outcomes.Count());
+            var deleteTasks = outcomes.Select(outcome => 
+                DeleteCosmosDocumentAsync(outcome.OutcomeId.ToString(), cosmosDbContainer)
+            );
+            
+            bool[] results = await Task.WhenAll(deleteTasks);
+            bool failureOccurred = results.Any(success => !success);
+
+            return (!failureOccurred, outcomes.Count);
         }
 
         public async Task<(bool processedSuccessfully, int impactedRecordCount)> PurgeSessionsForCustomerAsync(Guid customerId)
         {
             Container cosmosDbContainer = _cosmosDbClient.GetContainer("sessions", "sessions");
             List<Session> sessions = await RetrieveSessionsForCustomerAsync(customerId, cosmosDbContainer);
-            bool failureOccurred = false;
-
-            foreach (var session in sessions)
+            
+            if (sessions.Count == 0)
             {
-                bool success = await DeleteCosmosDocumentAsync(session.SessionId.ToString(), cosmosDbContainer);
-
-                if (!success)
-                {
-                    failureOccurred = true;
-                }
+                return (true, 0);
             }
 
-            return (!failureOccurred, sessions.Count());
+            var deleteTasks = sessions.Select(session => 
+                DeleteCosmosDocumentAsync(session.SessionId.ToString(), cosmosDbContainer)
+            );
+            
+            bool[] results = await Task.WhenAll(deleteTasks);
+            bool failureOccurred = results.Any(success => !success);
+
+            return (!failureOccurred, sessions.Count);
         }
 
         public async Task<(bool processedSuccessfully, int impactedRecordCount)> PurgeSubscriptionsForCustomerAsync(Guid customerId)
         {
             Container cosmosDbContainer = _cosmosDbClient.GetContainer("subscriptions", "subscriptions");
             List<Subscription> subscriptions = await RetrieveSubscriptionsForCustomerAsync(customerId, cosmosDbContainer);
-            bool failureOccurred = false;
-
-            foreach (var subscription in subscriptions)
+            
+            if (subscriptions.Count == 0)
             {
-                bool success = await DeleteCosmosDocumentAsync(subscription.SubscriptionId.ToString(), cosmosDbContainer);
-
-                if (!success)
-                {
-                    failureOccurred = true;
-                }
+                return (true, 0);
             }
 
-            return (!failureOccurred, subscriptions.Count());
+            var deleteTasks = subscriptions.Select(subscription => 
+                DeleteCosmosDocumentAsync(subscription.SubscriptionId.ToString(), cosmosDbContainer)
+            );
+            
+            bool[] results = await Task.WhenAll(deleteTasks);
+            bool failureOccurred = results.Any(success => !success);
+
+            return (!failureOccurred, subscriptions.Count);
         }
 
         public async Task<(bool processedSuccessfully, int impactedRecordCount)> PurgeTransfersForCustomerAsync(Guid customerId)
         {
             Container cosmosDbContainer = _cosmosDbClient.GetContainer("transfers", "transfers");
             List<Transfer> transfers = await RetrieveTransferForCustomerAsync(customerId, cosmosDbContainer);
-            bool failureOccurred = false;
-
-            foreach (var transfer in transfers)
+            
+            if (transfers.Count == 0)
             {
-                bool success = await DeleteCosmosDocumentAsync(transfer.TransferId.ToString(), cosmosDbContainer);
-
-                if (!success)
-                {
-                    failureOccurred = true;
-                }
+                return (true, 0);
             }
 
-            return (!failureOccurred, transfers.Count());
+            var deleteTasks = transfers.Select(transfer => 
+                DeleteCosmosDocumentAsync(transfer.TransferId.ToString(), cosmosDbContainer)
+            );
+            
+            bool[] results = await Task.WhenAll(deleteTasks);
+            bool failureOccurred = results.Any(success => !success);
+
+            return (!failureOccurred, transfers.Count);
         }
 
         public async Task<(bool processedSuccessfully, int impactedRecordCount)> PurgeWebchatsForCustomerAsync(Guid customerId)
         {
             Container cosmosDbContainer = _cosmosDbClient.GetContainer("webchats", "webchats");
             List<Webchat> webchats = await RetrieveWebchatsForCustomerAsync(customerId, cosmosDbContainer);
-            bool failureOccurred = false;
-
-            foreach (var webchat in webchats)
+            
+            if (webchats.Count == 0)
             {
-                bool success = await DeleteCosmosDocumentAsync(webchat.WebChatId.ToString(), cosmosDbContainer);
-
-                if (!success)
-                {
-                    failureOccurred = true;
-                }
+                return (true, 0);
             }
 
-            return (!failureOccurred, webchats.Count());
+            var deleteTasks = webchats.Select(webchat => 
+                DeleteCosmosDocumentAsync(webchat.WebChatId.ToString(), cosmosDbContainer)
+            );
+            
+            bool[] results = await Task.WhenAll(deleteTasks);
+            bool failureOccurred = results.Any(success => !success);
+
+            return (!failureOccurred, webchats.Count);
         }
 
         public async Task<bool> PurgeDocumentFromCosmosAsync(Guid documentId, string databaseId, string containerId)
@@ -360,25 +374,25 @@ namespace NCS.DSS.DataUtility.Services
 
             if (documentIds.Count > 0)
             {
-                _logger.LogInformation($"Container '{containerName}' has a total of {documentIds.Count.ToString()} matching records/documents");
-                int totalDeleted = 0;
-
-                foreach (var documentId in documentIds)
+                _logger.LogInformation($"Container '{containerName}' has a total of {documentIds.Count} matching records/documents");
+                
+                var deleteTasks = documentIds.Select(async documentId =>
                 {
                     using (ResponseMessage deleteRequestResponse = await cosmosDbContainer.DeleteItemStreamAsync(documentId, PartitionKey.None))
                     {
                         if (!deleteRequestResponse.IsSuccessStatusCode)
                         {
-                            _logger.LogWarning($"Failed to delete Cosmos record/document with documentId: '{documentId}'. Response code: {deleteRequestResponse.StatusCode.ToString()}. Error: {deleteRequestResponse.ErrorMessage}");
+                            _logger.LogWarning($"Failed to delete Cosmos record/document with documentId: '{documentId}'. Response code: {deleteRequestResponse.StatusCode}. Error: {deleteRequestResponse.ErrorMessage}");
+                            return false;
                         }
-                        else
-                        {
-                            totalDeleted++;
-                        }
+                        return true;
                     }
-                }
+                });
 
-                _logger.LogInformation($"{totalDeleted.ToString()} / {documentIds.Count.ToString()} '{containerName}' records/documents have been deleted successfully");
+                bool[] results = await Task.WhenAll(deleteTasks);
+                int totalDeleted = results.Count(success => success);
+
+                _logger.LogInformation($"{totalDeleted} / {documentIds.Count} '{containerName}' records/documents have been deleted successfully");
             }
             else
             {

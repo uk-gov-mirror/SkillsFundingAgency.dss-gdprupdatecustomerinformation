@@ -143,20 +143,32 @@ namespace NCS.DSS.DataUtility.Services
 
             using (SqlConnection connection = new SqlConnection(_sqlDbConnectionString))
             {
-                string executionQuery =
-                    // master data table
-                    @"DELETE FROM [dss-" + @tableName + "] WHERE id=@recordId OPTION (MAXDOP 1);" +
-
-                     // history table
-                     "DELETE FROM [dss-" + @tableName + "-history] WHERE id=@recordId OPTION (MAXDOP 1);";
-
                 connection.Open();
+
+                // Validate table name to prevent SQL injection (whitelist approach)
+                var validTableNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+                {
+                    "adviserdetails", "collections", "actionplans", "actions", "addresses", 
+                    "contacts", "diversitydetails", "employmentprogressions", "goals", 
+                    "learningprogressions", "outcomes", "prioritygroups", "sessions", 
+                    "subscriptions", "transfers", "webchats", "customers", "interactions"
+                };
+
+                if (!validTableNames.Contains(tableName))
+                {
+                    throw new ArgumentException($"Invalid table name: {tableName}", nameof(tableName));
+                }
+
+                // Use parameterized query with validated table name
+                string executionQuery =
+                    $"DELETE FROM [dss-{tableName}] WHERE id=@recordId OPTION (MAXDOP 1);" +
+                    $"DELETE FROM [dss-{tableName}-history] WHERE id=@recordId OPTION (MAXDOP 1);";
 
                 using (SqlCommand command = new SqlCommand(executionQuery, connection))
                 {
                     _logger.LogInformation($"Executing the DELETE query ({tableName} table)");
 
-                    command.Parameters.AddWithValue("@recordId", recordId.ToString());
+                    command.Parameters.Add("@recordId", SqlDbType.UniqueIdentifier).Value = recordId;
                     await command.ExecuteNonQueryAsync();
                 }
             }
