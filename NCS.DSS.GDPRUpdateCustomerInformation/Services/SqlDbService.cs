@@ -59,36 +59,36 @@ namespace NCS.DSS.DataUtility.Services
             {
                 string executionQuery =
                     // master data tables
-                    @"DELETE FROM [dss-actionplans] WHERE CustomerId=@customerId;" +
-                     "DELETE FROM [dss-actions] WHERE CustomerId=@customerId;" +
-                     "DELETE FROM [dss-addresses] WHERE CustomerId=@customerId;" +
-                     "DELETE FROM [dss-contacts] WHERE CustomerId=@customerId;" +
-                     "DELETE FROM [dss-diversitydetails] WHERE CustomerId=@customerId;" +
-                     "DELETE FROM [dss-employmentprogressions] WHERE CustomerId=@customerId;" +
-                     "DELETE FROM [dss-goals] WHERE CustomerId=@customerId;" +
-                     "DELETE FROM [dss-learningprogressions] WHERE CustomerId=@customerId;" +
-                     "DELETE FROM [dss-outcomes] WHERE CustomerId=@customerId;" +
-                     "DELETE FROM [dss-prioritygroups] WHERE CustomerId=@customerId;" +
-                     "DELETE FROM [dss-sessions] WHERE CustomerId=@customerId;" +
-                     "DELETE FROM [dss-subscriptions] WHERE CustomerId=@customerId;" +
-                     "DELETE FROM [dss-transfers] WHERE CustomerId=@customerId;" +
-                     "DELETE FROM [dss-webchats] WHERE CustomerId=@customerId;" +
+                    @"DELETE FROM [dss-actionplans] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
+                     "DELETE FROM [dss-actions] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
+                     "DELETE FROM [dss-addresses] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
+                     "DELETE FROM [dss-contacts] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
+                     "DELETE FROM [dss-diversitydetails] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
+                     "DELETE FROM [dss-employmentprogressions] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
+                     "DELETE FROM [dss-goals] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
+                     "DELETE FROM [dss-learningprogressions] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
+                     "DELETE FROM [dss-outcomes] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
+                     "DELETE FROM [dss-prioritygroups] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
+                     "DELETE FROM [dss-sessions] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
+                     "DELETE FROM [dss-subscriptions] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
+                     "DELETE FROM [dss-transfers] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
+                     "DELETE FROM [dss-webchats] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
 
                      // history tables
-                     "DELETE FROM [dss-actionplans-history] WHERE CustomerId=@customerId;" +
-                     "DELETE FROM [dss-actions-history] WHERE CustomerId=@customerId;" +
-                     "DELETE FROM [dss-addresses-history] WHERE CustomerId=@customerId;" +
-                     "DELETE FROM [dss-contacts-history] WHERE CustomerId=@customerId;" +
-                     "DELETE FROM [dss-diversitydetails-history] WHERE CustomerId=@customerId;" +
-                     "DELETE FROM [dss-employmentprogressions-history] WHERE CustomerId=@customerId;" +
-                     "DELETE FROM [dss-goals-history] WHERE CustomerId=@customerId;" +
-                     "DELETE FROM [dss-learningprogressions-history] WHERE CustomerId=@customerId;" +
-                     "DELETE FROM [dss-outcomes-history] WHERE CustomerId=@customerId;" +
-                     "DELETE FROM [dss-prioritygroups-history] WHERE CustomerId=@customerId;" +
-                     "DELETE FROM [dss-sessions-history] WHERE CustomerId=@customerId;" +
-                     "DELETE FROM [dss-subscriptions-history] WHERE CustomerId=@customerId;" +
-                     "DELETE FROM [dss-transfers-history] WHERE CustomerId=@customerId;" +
-                     "DELETE FROM [dss-webchats-history] WHERE CustomerId=@customerId;";
+                     "DELETE FROM [dss-actionplans-history] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
+                     "DELETE FROM [dss-actions-history] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
+                     "DELETE FROM [dss-addresses-history] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
+                     "DELETE FROM [dss-contacts-history] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
+                     "DELETE FROM [dss-diversitydetails-history] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
+                     "DELETE FROM [dss-employmentprogressions-history] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
+                     "DELETE FROM [dss-goals-history] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
+                     "DELETE FROM [dss-learningprogressions-history] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
+                     "DELETE FROM [dss-outcomes-history] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
+                     "DELETE FROM [dss-prioritygroups-history] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
+                     "DELETE FROM [dss-sessions-history] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
+                     "DELETE FROM [dss-subscriptions-history] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
+                     "DELETE FROM [dss-transfers-history] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
+                     "DELETE FROM [dss-webchats-history] WHERE CustomerId=@customerId OPTION (MAXDOP 1);";
 
                 connection.Open();
 
@@ -96,7 +96,7 @@ namespace NCS.DSS.DataUtility.Services
                 {
                     _logger.LogInformation($"Executing the DELETE query (master and history tables)");
 
-                    command.Parameters.AddWithValue("@customerId", customerId.ToString());
+                    command.Parameters.Add("@customerId", SqlDbType.UniqueIdentifier).Value = customerId;
                     impactedRows = await command.ExecuteNonQueryAsync();
                 }
             }
@@ -115,12 +115,12 @@ namespace NCS.DSS.DataUtility.Services
             {
                 string executionQuery =
                     // master data table
-                    @"DELETE FROM [dss-customers] WHERE id=@customerId;" +
-                    "DELETE FROM [dss-interactions] WHERE CustomerId=@customerId;" +
+                    @"DELETE FROM [dss-customers] WHERE id=@customerId OPTION (MAXDOP 1);" +
+                    "DELETE FROM [dss-interactions] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
 
                      // history table
-                     "DELETE FROM [dss-customers-history] WHERE id=@customerId;" +
-                     "DELETE FROM [dss-interactions-history] WHERE CustomerId=@customerId;";
+                     "DELETE FROM [dss-customers-history] WHERE id=@customerId OPTION (MAXDOP 1);" +
+                     "DELETE FROM [dss-interactions-history] WHERE CustomerId=@customerId OPTION (MAXDOP 1);";
 
                 connection.Open();
 
@@ -128,7 +128,7 @@ namespace NCS.DSS.DataUtility.Services
                 {
                     _logger.LogInformation($"Executing the DELETE query (customer table)");
 
-                    command.Parameters.AddWithValue("@customerId", customerId.ToString());
+                    command.Parameters.Add("@customerId", SqlDbType.UniqueIdentifier).Value = customerId;
                     impactedRows = await command.ExecuteNonQueryAsync();
                 }
             }
@@ -145,10 +145,10 @@ namespace NCS.DSS.DataUtility.Services
             {
                 string executionQuery =
                     // master data table
-                    @"DELETE FROM [dss-" + @tableName + "] WHERE id=@recordId;" +
+                    @"DELETE FROM [dss-" + @tableName + "] WHERE id=@recordId OPTION (MAXDOP 1);" +
 
                      // history table
-                     "DELETE FROM [dss-" + @tableName + "-history] WHERE id=@recordId;";
+                     "DELETE FROM [dss-" + @tableName + "-history] WHERE id=@recordId OPTION (MAXDOP 1);";
 
                 connection.Open();
 
