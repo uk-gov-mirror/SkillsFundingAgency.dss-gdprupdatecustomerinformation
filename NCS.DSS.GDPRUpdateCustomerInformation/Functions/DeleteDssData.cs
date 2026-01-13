@@ -58,44 +58,34 @@ namespace NCS.DSS.DataUtility.Functions
             try
             {
                 // PHASE 1 - DELETE DATA FROM COSMOS DB
-                var actionPlanCosmosDB = await _cosmosDatabaseService.PurgeActionPlansForCustomerAsync(queueBody.CustomerId);
-                var actionCosmosDB = await _cosmosDatabaseService.PurgeActionsForCustomerAsync(queueBody.CustomerId);
-                var addressCosmosDB = await _cosmosDatabaseService.PurgeAddressesForCustomerAsync(queueBody.CustomerId);
-                var contactDetailCosmosDB = await _cosmosDatabaseService.PurgeContactDetailsForCustomerAsync(queueBody.CustomerId);
-                var diversityDetailCosmosDB = await _cosmosDatabaseService.PurgeDiversityDetailsForCustomerAsync(queueBody.CustomerId);
-                var employmentProgressionCosmosDB = await _cosmosDatabaseService.PurgeEmploymentProgressionsForCustomerAsync(queueBody.CustomerId);
-                var goalCosmosDB = await _cosmosDatabaseService.PurgeGoalsForCustomerAsync(queueBody.CustomerId);
-                var interactionCosmosDB = await _cosmosDatabaseService.PurgeInteractionsForCustomerAsync(queueBody.CustomerId);
-                var learningProgressionCosmosDB = await _cosmosDatabaseService.PurgeLearningProgressionsForCustomerAsync(queueBody.CustomerId);
-                var outcomeCosmosDB = await _cosmosDatabaseService.PurgeOutcomesForCustomerAsync(queueBody.CustomerId);
-                var sessionCosmosDB = await _cosmosDatabaseService.PurgeSessionsForCustomerAsync(queueBody.CustomerId);
-                var subscriptionCosmosDB = await _cosmosDatabaseService.PurgeSubscriptionsForCustomerAsync(queueBody.CustomerId);
-                var transferCosmosDB = await _cosmosDatabaseService.PurgeTransfersForCustomerAsync(queueBody.CustomerId);
-                var webchatCosmosDB = await _cosmosDatabaseService.PurgeWebchatsForCustomerAsync(queueBody.CustomerId);
-                var customerCosmosDB = await _cosmosDatabaseService.PurgeCustomerRecordAsync(queueBody.CustomerId);
+                var purgeResults = new Dictionary<string, (bool success, int count)>
+                {
+                    ["dss-actionplans"] = await _cosmosDatabaseService.PurgeActionPlansForCustomerAsync(queueBody.CustomerId),
+                    ["dss-actions"] = await _cosmosDatabaseService.PurgeActionsForCustomerAsync(queueBody.CustomerId),
+                    ["dss-addresses"] = await _cosmosDatabaseService.PurgeAddressesForCustomerAsync(queueBody.CustomerId),
+                    ["dss-contacts"] = await _cosmosDatabaseService.PurgeContactDetailsForCustomerAsync(queueBody.CustomerId),
+                    ["dss-diversitydetails"] = await _cosmosDatabaseService.PurgeDiversityDetailsForCustomerAsync(queueBody.CustomerId),
+                    ["dss-employmentprogressions"] = await _cosmosDatabaseService.PurgeEmploymentProgressionsForCustomerAsync(queueBody.CustomerId),
+                    ["dss-goals"] = await _cosmosDatabaseService.PurgeGoalsForCustomerAsync(queueBody.CustomerId),
+                    ["dss-interactions"] = await _cosmosDatabaseService.PurgeInteractionsForCustomerAsync(queueBody.CustomerId),
+                    ["dss-learningprogressions"] = await _cosmosDatabaseService.PurgeLearningProgressionsForCustomerAsync(queueBody.CustomerId),
+                    ["dss-outcomes"] = await _cosmosDatabaseService.PurgeOutcomesForCustomerAsync(queueBody.CustomerId),
+                    ["dss-sessions"] = await _cosmosDatabaseService.PurgeSessionsForCustomerAsync(queueBody.CustomerId),
+                    ["dss-subscriptions"] = await _cosmosDatabaseService.PurgeSubscriptionsForCustomerAsync(queueBody.CustomerId),
+                    ["dss-transfers"] = await _cosmosDatabaseService.PurgeTransfersForCustomerAsync(queueBody.CustomerId),
+                    ["dss-webchats"] = await _cosmosDatabaseService.PurgeWebchatsForCustomerAsync(queueBody.CustomerId),
+                    ["dss-customers"] = await _cosmosDatabaseService.PurgeCustomerRecordAsync(queueBody.CustomerId)
+                };
 
-                bool cosmosFailureHasOccurred = !actionPlanCosmosDB.processedSuccessfully
-                    || !actionCosmosDB.processedSuccessfully
-                    || !addressCosmosDB.processedSuccessfully
-                    || !contactDetailCosmosDB.processedSuccessfully
-                    || !diversityDetailCosmosDB.processedSuccessfully
-                    || !employmentProgressionCosmosDB.processedSuccessfully
-                    || !goalCosmosDB.processedSuccessfully
-                    || !interactionCosmosDB.processedSuccessfully
-                    || !learningProgressionCosmosDB.processedSuccessfully
-                    || !outcomeCosmosDB.processedSuccessfully
-                    || !sessionCosmosDB.processedSuccessfully
-                    || !subscriptionCosmosDB.processedSuccessfully
-                    || !transferCosmosDB.processedSuccessfully
-                    || !webchatCosmosDB.processedSuccessfully
-                    || !customerCosmosDB.processedSuccessfully;
+                var failedTables = purgeResults
+                    .Where(kvp => !kvp.Value.success)
+                    .Select(kvp => kvp.Key)
+                    .ToList();
 
-                int totalDocumentCount = TotalCounter(actionPlanCosmosDB.impactedRecordCount, actionCosmosDB.impactedRecordCount, addressCosmosDB.impactedRecordCount,
-                    contactDetailCosmosDB.impactedRecordCount, diversityDetailCosmosDB.impactedRecordCount, employmentProgressionCosmosDB.impactedRecordCount,
-                    goalCosmosDB.impactedRecordCount, interactionCosmosDB.impactedRecordCount, learningProgressionCosmosDB.impactedRecordCount,
-                    outcomeCosmosDB.impactedRecordCount, sessionCosmosDB.impactedRecordCount, subscriptionCosmosDB.impactedRecordCount, transferCosmosDB.impactedRecordCount,
-                    webchatCosmosDB.impactedRecordCount, customerCosmosDB.impactedRecordCount
-                );
+                bool cosmosFailureHasOccurred = failedTables.Any();
+                string failedTablesMessage = string.Join(", ", failedTables);
+
+                int totalDocumentCount = purgeResults.Sum(kvp => kvp.Value.count);
 
                 string successText = cosmosFailureHasOccurred ? "no" : "yes";
 
@@ -113,10 +103,10 @@ namespace NCS.DSS.DataUtility.Functions
                 if (cosmosFailureHasOccurred)
                 {
                     _logger.LogWarning(
-                        "Processing failure identified - moving originating message to dead letter queue. Customer ID: {customerId}"
-                        , queueBody.CustomerId
+                        "Processing failure identified - moving originating message to dead letter queue. Customer ID: {CustomerId}. Tables: {FailedTables}"
+                        , queueBody.CustomerId, failedTablesMessage
                     );
-                    await messageActions.DeadLetterMessageAsync(message);
+                    await messageActions.DeadLetterMessageAsync(message, null, "Cosmos DB purge has failed for table(s):" + failedTablesMessage);
                 }
                 else
                 {
@@ -135,10 +125,10 @@ namespace NCS.DSS.DataUtility.Functions
             {
                 _logger.LogError(
                     ex
-                    , "INVOCATION ERROR ({functionName}): function has failed with exception: {exception}. Moving originating message to dead letter queue. Customer ID: {customerId}"
+                    , "INVOCATION ERROR ({FunctionName}): function has failed with exception: {Exception}. Moving originating message to dead letter queue. Customer ID: {CustomerId}"
                     , nameof(DeleteDSSData)
                     , ex.Message
-                    , queueBody.CustomerId.ToString()
+                    , queueBody.CustomerId
                 );
                 await messageActions.DeadLetterMessageAsync(message, null, ex.Message);
 
@@ -246,18 +236,6 @@ namespace NCS.DSS.DataUtility.Functions
                 throw;
             }
 
-        }
-
-        private static int TotalCounter(params int[] input)
-        {
-            int total = 0;
-
-            foreach (int i in input)
-            {
-                total += i;
-            }
-
-            return total;
         }
     }
 }
