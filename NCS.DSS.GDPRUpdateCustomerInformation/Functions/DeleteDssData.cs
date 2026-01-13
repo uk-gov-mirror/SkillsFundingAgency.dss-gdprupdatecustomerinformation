@@ -10,12 +10,9 @@ namespace NCS.DSS.DataUtility.Functions
 {
     public class DeleteDSSData
     {
+        private readonly ILogger<DeleteDSSData> _logger;
         private readonly ICosmosDatabaseService _cosmosDatabaseService;
         private readonly ISqlDbService _sqlDbService;
-        private readonly ILogger<DeleteDSSData> _logger;
-        private const string CustomerId = "customerid";
-        private const string AdviserDetailId = "adviserDetailId";
-        private const string CollectionId = "collectionId";
 
         public DeleteDSSData(ILogger<DeleteDSSData> logger, ICosmosDatabaseService cosmosDatabaseService, ISqlDbService sqlDbService)
         {
@@ -36,26 +33,17 @@ namespace NCS.DSS.DataUtility.Functions
             // convert queue message into usage object
             var bodyText = Encoding.UTF8.GetString(message.Body);
 
-            if (!string.IsNullOrWhiteSpace(bodyText))
-            {
-                bodyText = bodyText.ToLower();
-            }
-
             switch (bodyText)
             {
-                case CustomerId:
+                case string customer when bodyText.ToLower().Contains("customerid"):
                     await DeleteCustomerData(message, messageActions, bodyText);
                     break;
-                case AdviserDetailId:
+                case string adviserdetail when bodyText.ToLower().Contains("adviserdetailid"):
                     await DeleteAdviserDetailData(message, messageActions, bodyText);
                     break;
-                case CollectionId:
+                case string collection when bodyText.ToLower().Contains("collectionid"):
                     await DeleteCollectionData(message, messageActions, bodyText);
                     break;
-                default:
-                    _logger.LogError("Unknown queue message received: {BodyText}", bodyText);
-                    await messageActions.DeadLetterMessageAsync(message, null, "Unknown queue message received: " + bodyText, "Message does not contain an expected ID");
-                    return;
             }
 
             _logger.LogInformation($"Function '{nameof(DeleteDSSData)}' has finished invocation");
