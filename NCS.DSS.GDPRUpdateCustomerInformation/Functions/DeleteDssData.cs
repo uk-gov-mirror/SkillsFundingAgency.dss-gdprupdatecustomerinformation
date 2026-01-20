@@ -36,96 +36,86 @@ namespace NCS.DSS.DataUtility.Functions
             switch (bodyText)
             {
                 case string customer when bodyText.ToLower().Contains("customerid"):
-                    await deleteCustomerData(message, messageActions, bodyText);
+                    await DeleteCustomerData(message, messageActions, bodyText);
                     break;
                 case string adviserdetail when bodyText.ToLower().Contains("adviserdetailid"):
-                    await deleteAdviserDetailData(message, messageActions, bodyText);
+                    await DeleteAdviserDetailData(message, messageActions, bodyText);
                     break;
                 case string collection when bodyText.ToLower().Contains("collectionid"):
-                    await deleteCollectionData(message, messageActions, bodyText);
+                    await DeleteCollectionData(message, messageActions, bodyText);
                     break;
             }
 
             _logger.LogInformation($"Function '{nameof(DeleteDSSData)}' has finished invocation");
         }
 
-        public async Task deleteCustomerData(ServiceBusReceivedMessage message, ServiceBusMessageActions messageActions, string bodyText)
+        public async Task DeleteCustomerData(ServiceBusReceivedMessage message, ServiceBusMessageActions messageActions, string bodyText)
         {
             DeleteCustomerQueueMessage queueBody = JsonConvert.DeserializeObject<DeleteCustomerQueueMessage>(bodyText);
 
-            _logger.LogInformation($"Customer with ID '{queueBody.CustomerId.ToString()}' will now be processed");
+            _logger.LogInformation("Customer with ID '{CustomerId}' will now be processed", queueBody.CustomerId);
 
             try
             {
                 // PHASE 1 - DELETE DATA FROM COSMOS DB
-                var actionPlanCosmosDB = await _cosmosDatabaseService.PurgeActionPlansForCustomerAsync(queueBody.CustomerId);
-                var actionCosmosDB = await _cosmosDatabaseService.PurgeActionsForCustomerAsync(queueBody.CustomerId);
-                var addressCosmosDB = await _cosmosDatabaseService.PurgeAddressesForCustomerAsync(queueBody.CustomerId);
-                var contactDetailCosmosDB = await _cosmosDatabaseService.PurgeContactDetailsForCustomerAsync(queueBody.CustomerId);
-                var diversityDetailCosmosDB = await _cosmosDatabaseService.PurgeDiversityDetailsForCustomerAsync(queueBody.CustomerId);
-                var employmentProgressionCosmosDB = await _cosmosDatabaseService.PurgeEmploymentProgressionsForCustomerAsync(queueBody.CustomerId);
-                var goalCosmosDB = await _cosmosDatabaseService.PurgeGoalsForCustomerAsync(queueBody.CustomerId);
-                var interactionCosmosDB = await _cosmosDatabaseService.PurgeInteractionsForCustomerAsync(queueBody.CustomerId);
-                var learningProgressionCosmosDB = await _cosmosDatabaseService.PurgeLearningProgressionsForCustomerAsync(queueBody.CustomerId);
-                var outcomeCosmosDB = await _cosmosDatabaseService.PurgeOutcomesForCustomerAsync(queueBody.CustomerId);
-                var sessionCosmosDB = await _cosmosDatabaseService.PurgeSessionsForCustomerAsync(queueBody.CustomerId);
-                var subscriptionCosmosDB = await _cosmosDatabaseService.PurgeSubscriptionsForCustomerAsync(queueBody.CustomerId);
-                var transferCosmosDB = await _cosmosDatabaseService.PurgeTransfersForCustomerAsync(queueBody.CustomerId);
-                var webchatCosmosDB = await _cosmosDatabaseService.PurgeWebchatsForCustomerAsync(queueBody.CustomerId);
-                var customerCosmosDB = await _cosmosDatabaseService.PurgeCustomerRecordAsync(queueBody.CustomerId);
+                var purgeResults = new Dictionary<string, (bool success, int count)>
+                {
+                    ["dss-actionplans"] = await _cosmosDatabaseService.PurgeActionPlansForCustomerAsync(queueBody.CustomerId),
+                    ["dss-actions"] = await _cosmosDatabaseService.PurgeActionsForCustomerAsync(queueBody.CustomerId),
+                    ["dss-addresses"] = await _cosmosDatabaseService.PurgeAddressesForCustomerAsync(queueBody.CustomerId),
+                    ["dss-contacts"] = await _cosmosDatabaseService.PurgeContactDetailsForCustomerAsync(queueBody.CustomerId),
+                    ["dss-diversitydetails"] = await _cosmosDatabaseService.PurgeDiversityDetailsForCustomerAsync(queueBody.CustomerId),
+                    ["dss-employmentprogressions"] = await _cosmosDatabaseService.PurgeEmploymentProgressionsForCustomerAsync(queueBody.CustomerId),
+                    ["dss-goals"] = await _cosmosDatabaseService.PurgeGoalsForCustomerAsync(queueBody.CustomerId),
+                    ["dss-interactions"] = await _cosmosDatabaseService.PurgeInteractionsForCustomerAsync(queueBody.CustomerId),
+                    ["dss-learningprogressions"] = await _cosmosDatabaseService.PurgeLearningProgressionsForCustomerAsync(queueBody.CustomerId),
+                    ["dss-outcomes"] = await _cosmosDatabaseService.PurgeOutcomesForCustomerAsync(queueBody.CustomerId),
+                    ["dss-sessions"] = await _cosmosDatabaseService.PurgeSessionsForCustomerAsync(queueBody.CustomerId),
+                    ["dss-subscriptions"] = await _cosmosDatabaseService.PurgeSubscriptionsForCustomerAsync(queueBody.CustomerId),
+                    ["dss-transfers"] = await _cosmosDatabaseService.PurgeTransfersForCustomerAsync(queueBody.CustomerId),
+                    ["dss-webchats"] = await _cosmosDatabaseService.PurgeWebchatsForCustomerAsync(queueBody.CustomerId),
+                    ["dss-customers"] = await _cosmosDatabaseService.PurgeCustomerRecordAsync(queueBody.CustomerId)
+                };
 
-                bool cosmosFailureHasOccurred = !actionPlanCosmosDB.processedSuccessfully
-                    || !actionCosmosDB.processedSuccessfully
-                    || !addressCosmosDB.processedSuccessfully
-                    || !contactDetailCosmosDB.processedSuccessfully
-                    || !diversityDetailCosmosDB.processedSuccessfully
-                    || !employmentProgressionCosmosDB.processedSuccessfully
-                    || !goalCosmosDB.processedSuccessfully
-                    || !interactionCosmosDB.processedSuccessfully
-                    || !learningProgressionCosmosDB.processedSuccessfully
-                    || !outcomeCosmosDB.processedSuccessfully
-                    || !sessionCosmosDB.processedSuccessfully
-                    || !subscriptionCosmosDB.processedSuccessfully
-                    || !transferCosmosDB.processedSuccessfully
-                    || !webchatCosmosDB.processedSuccessfully
-                    || !customerCosmosDB.processedSuccessfully;
+                var failedTables = purgeResults
+                    .Where(kvp => !kvp.Value.success)
+                    .Select(kvp => kvp.Key)
+                    .ToList();
 
-                int totalDocumentCount = TotalCounter(actionPlanCosmosDB.impactedRecordCount, actionCosmosDB.impactedRecordCount, addressCosmosDB.impactedRecordCount,
-                    contactDetailCosmosDB.impactedRecordCount, diversityDetailCosmosDB.impactedRecordCount, employmentProgressionCosmosDB.impactedRecordCount,
-                    goalCosmosDB.impactedRecordCount, interactionCosmosDB.impactedRecordCount, learningProgressionCosmosDB.impactedRecordCount,
-                    outcomeCosmosDB.impactedRecordCount, sessionCosmosDB.impactedRecordCount, subscriptionCosmosDB.impactedRecordCount, transferCosmosDB.impactedRecordCount,
-                    webchatCosmosDB.impactedRecordCount, customerCosmosDB.impactedRecordCount
-                );
+                bool cosmosFailureHasOccurred = failedTables.Any();
+                string failedTablesMessage = string.Join(", ", failedTables);
+
+                int totalDocumentCount = purgeResults.Sum(kvp => kvp.Value.count);
 
                 string successText = cosmosFailureHasOccurred ? "no" : "yes";
 
-                _logger.LogInformation($">> Cosmos DB purge outcome for customer '{queueBody.CustomerId.ToString()}' <<");
-                _logger.LogInformation($"- Successfully processed? '{successText}'");
-                _logger.LogInformation($">> Documents deleted: '{totalDocumentCount}' <<");
+                _logger.LogInformation(">> Cosmos DB purge outcome for customer '{CustomerId}' <<", queueBody.CustomerId);
+                _logger.LogInformation("- Successfully processed? '{SuccessText}'", successText);
+                _logger.LogInformation(">> Documents deleted: '{TotalDocumentCount}' <<", totalDocumentCount);
 
                 // PHASE 2 - DELETE DATA FROM SQL DB
                 int recordCountSqlDbAllTables = await _sqlDbService.PurgeDataItemsForCustomerAsync(queueBody.CustomerId);
 
-                _logger.LogInformation($">> SQL DB purge outcome for customer '{queueBody.CustomerId.ToString()}' <<");
-                _logger.LogInformation($"- Successfully processed? 'yes'"); // exception would be thrown if not successful
-                _logger.LogInformation($">> Records deleted (data and history): {recordCountSqlDbAllTables} <<");
+                _logger.LogInformation(">> SQL DB purge outcome for customer '{CustomerId}' <<", queueBody.CustomerId);
+                _logger.LogInformation("- Successfully processed? 'yes'"); // exception would be thrown if not successful
+                _logger.LogInformation(">> Records deleted (data and history): {RecordCountSqlDbAllTables} <<", recordCountSqlDbAllTables);
 
                 if (cosmosFailureHasOccurred)
                 {
                     _logger.LogWarning(
-                        "Processing failure identified - moving originating message to dead letter queue. Customer ID: {customerId}"
-                        , queueBody.CustomerId.ToString()
+                        "Processing failure identified - moving originating message to dead letter queue. Customer ID: {CustomerId}. Tables: {FailedTables}"
+                        , queueBody.CustomerId, failedTablesMessage
                     );
-                    await messageActions.DeadLetterMessageAsync(message);
+                    await messageActions.DeadLetterMessageAsync(message, null, "Cosmos DB purge has failed for table(s):" + failedTablesMessage);
                 }
                 else
                 {
                     // PHASE 3 - DELETE CUSTOMER RECORD FROM SQL DB
                     int recordCountSqlDbCustomerTable = await _sqlDbService.PurgeCustomerDataAsync(queueBody.CustomerId);
 
-                    _logger.LogInformation($">> SQL DB purge outcome for customer '{queueBody.CustomerId.ToString()}' <<");
-                    _logger.LogInformation($"- Successfully processed? 'yes'"); // exception would be thrown if not successful
-                    _logger.LogInformation($">> Records deleted (customer): {recordCountSqlDbCustomerTable} <<");
+                    _logger.LogInformation(">> SQL DB purge outcome for customer '{CustomerId}' <<", queueBody.CustomerId);
+                    _logger.LogInformation("- Successfully processed? 'yes'"); // exception would be thrown if not successful
+                    _logger.LogInformation(">> Records deleted (customer): {RecordCountSqlDbCustomerTable} <<", recordCountSqlDbCustomerTable);
 
                     _logger.LogInformation("Processing succeeded - completing message");
                     await messageActions.CompleteMessageAsync(message);
@@ -135,22 +125,22 @@ namespace NCS.DSS.DataUtility.Functions
             {
                 _logger.LogError(
                     ex
-                    , "INVOCATION ERROR ({functionName}): function has failed with exception: {exception}. Moving originating message to dead letter queue. Customer ID: {customerId}"
+                    , "INVOCATION ERROR ({FunctionName}): function has failed with exception: {Exception}. Moving originating message to dead letter queue. Customer ID: {CustomerId}"
                     , nameof(DeleteDSSData)
                     , ex.Message
-                    , queueBody.CustomerId.ToString()
+                    , queueBody.CustomerId
                 );
-                await messageActions.DeadLetterMessageAsync(message);
+                await messageActions.DeadLetterMessageAsync(message, null, ex.Message);
 
                 throw;
             }
         }
 
-        public async Task deleteAdviserDetailData(ServiceBusReceivedMessage message, ServiceBusMessageActions messageActions, string bodyText)
+        public async Task DeleteAdviserDetailData(ServiceBusReceivedMessage message, ServiceBusMessageActions messageActions, string bodyText)
         {
 
             DeleteAdviserDetailQueueMessage queueBody = JsonConvert.DeserializeObject<DeleteAdviserDetailQueueMessage>(bodyText);
-            _logger.LogInformation($"Adviser Detail with ID '{queueBody.AdviserDetailId.ToString()}' will now be processed");
+            _logger.LogInformation("Adviser Detail with ID '{AdviserDetailId}' will now be processed", queueBody.AdviserDetailId);
 
             try
             {
@@ -159,8 +149,8 @@ namespace NCS.DSS.DataUtility.Functions
                 var adviserDetailsCosmosDeletionSuccessful = await _cosmosDatabaseService.PurgeDocumentFromCosmosAsync(queueBody.AdviserDetailId, "adviserdetails", "adviserdetails");
 
                 string successText = !adviserDetailsCosmosDeletionSuccessful ? "no" : "yes";
-                _logger.LogInformation($">> Cosmos DB purge outcome for adviser detail '{queueBody.AdviserDetailId.ToString()}' <<");
-                _logger.LogInformation($"- Successfully processed? '{successText}'");
+                _logger.LogInformation(">> Cosmos DB purge outcome for adviser detail '{AdviserDetailId}' <<", queueBody.AdviserDetailId);
+                _logger.LogInformation("- Successfully processed? '{successText}'", successText);
 
                 if (!adviserDetailsCosmosDeletionSuccessful)
                 {
@@ -174,8 +164,8 @@ namespace NCS.DSS.DataUtility.Functions
                 {
                     //Purge from SqlDB
                     await _sqlDbService.PurgeRecordDataAsync(queueBody.AdviserDetailId, "adviserdetails");
-                    _logger.LogInformation($">> SQL DB purge outcome for adviser detail '{queueBody.AdviserDetailId.ToString()}' <<");
-                    _logger.LogInformation($"- Successfully processed? 'yes'"); // exception would be thrown if not successful
+                    _logger.LogInformation(">> SQL DB purge outcome for adviser detail '{AdviserDetailId}' <<", queueBody.AdviserDetailId);
+                    _logger.LogInformation("- Successfully processed? 'yes'"); // exception would be thrown if not successful
 
                     _logger.LogInformation("Processing succeeded - completing message");
                     await messageActions.CompleteMessageAsync(message);
@@ -190,16 +180,17 @@ namespace NCS.DSS.DataUtility.Functions
                     , ex.Message
                     , queueBody.AdviserDetailId.ToString()
                 );
-                await messageActions.DeadLetterMessageAsync(message);
+                await messageActions.DeadLetterMessageAsync(message, null, ex.Message);
+
 
                 throw;
             }      
         }
 
-        public async Task deleteCollectionData(ServiceBusReceivedMessage message, ServiceBusMessageActions messageActions, string bodyText)
+        public async Task DeleteCollectionData(ServiceBusReceivedMessage message, ServiceBusMessageActions messageActions, string bodyText)
         {
             DeleteCollectionQueueMessage queueBody = JsonConvert.DeserializeObject<DeleteCollectionQueueMessage>(bodyText);
-            _logger.LogInformation($"Collection with ID '{queueBody.CollectionId.ToString()}' will now be processed");
+            _logger.LogInformation("Collection with ID '{CollectionId}' will now be processed", queueBody.CollectionId);
 
             try
             {
@@ -208,8 +199,8 @@ namespace NCS.DSS.DataUtility.Functions
                 var collectionsCosmosDeletionSuccessful = await _cosmosDatabaseService.PurgeDocumentFromCosmosAsync(queueBody.CollectionId, "collections", "collections");
 
                 string successText = !collectionsCosmosDeletionSuccessful ? "no" : "yes";
-                _logger.LogInformation($">> Cosmos DB purge outcome for collection '{queueBody.CollectionId.ToString()}' <<");
-                _logger.LogInformation($"- Successfully processed? '{successText}'");
+                _logger.LogInformation(">> Cosmos DB purge outcome for collection '{CollectionId}' <<", queueBody.CollectionId);
+                _logger.LogInformation("- Successfully processed? '{successText}'", successText);
 
                 if (!collectionsCosmosDeletionSuccessful)
                 {
@@ -223,8 +214,8 @@ namespace NCS.DSS.DataUtility.Functions
                 {
                     //Purge from SqlDB
                     await _sqlDbService.PurgeRecordDataAsync(queueBody.CollectionId, "collections");
-                    _logger.LogInformation($">> SQL DB purge outcome for collection '{queueBody.CollectionId.ToString()}' <<");
-                    _logger.LogInformation($"- Successfully processed? 'yes'"); // exception would be thrown if not successful
+                    _logger.LogInformation(">> SQL DB purge outcome for collection '{CollectionId}' <<", queueBody.CollectionId);
+                    _logger.LogInformation("- Successfully processed? 'yes'"); // exception would be thrown if not successful
 
                     _logger.LogInformation("Processing succeeded - completing message");
                     await messageActions.CompleteMessageAsync(message);
@@ -239,23 +230,12 @@ namespace NCS.DSS.DataUtility.Functions
                     , ex.Message
                     , queueBody.CollectionId.ToString()
                 );
-                await messageActions.DeadLetterMessageAsync(message);
+                await messageActions.DeadLetterMessageAsync(message, null, ex.Message);
+
 
                 throw;
             }
 
-        }
-
-        private static int TotalCounter(params int[] input)
-        {
-            int total = 0;
-
-            foreach (int i in input)
-            {
-                total += i;
-            }
-
-            return total;
         }
     }
 }

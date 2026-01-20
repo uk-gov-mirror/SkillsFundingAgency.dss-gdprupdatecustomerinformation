@@ -37,7 +37,7 @@ namespace NCS.DSS.DataUtility.Services
 
                 while (reader.Read())
                 {
-                    Guid customerId = Guid.Parse(reader["ID"].ToString());
+                    Guid customerId = reader.GetGuid(reader.GetOrdinal("ID"));
                     customerIdList.Add(customerId);
                 }
 
@@ -53,51 +53,65 @@ namespace NCS.DSS.DataUtility.Services
         {
             _logger.LogInformation($"{nameof(SqlDbService)} method '{nameof(PurgeDataItemsForCustomerAsync)}' has been called");
 
-            int impactedRows = 0;
+            int impactedRows;
 
-            using (SqlConnection connection = new SqlConnection(_sqlDbConnectionString))
+            await using (SqlConnection connection = new SqlConnection(_sqlDbConnectionString))
             {
-                string executionQuery =
-                    // master data tables
-                    @"DELETE FROM [dss-actionplans] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
-                     "DELETE FROM [dss-actions] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
-                     "DELETE FROM [dss-addresses] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
-                     "DELETE FROM [dss-contacts] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
-                     "DELETE FROM [dss-diversitydetails] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
-                     "DELETE FROM [dss-employmentprogressions] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
-                     "DELETE FROM [dss-goals] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
-                     "DELETE FROM [dss-learningprogressions] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
-                     "DELETE FROM [dss-outcomes] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
-                     "DELETE FROM [dss-prioritygroups] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
-                     "DELETE FROM [dss-sessions] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
-                     "DELETE FROM [dss-subscriptions] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
-                     "DELETE FROM [dss-transfers] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
-                     "DELETE FROM [dss-webchats] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
-
-                     // history tables
-                     "DELETE FROM [dss-actionplans-history] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
-                     "DELETE FROM [dss-actions-history] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
-                     "DELETE FROM [dss-addresses-history] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
-                     "DELETE FROM [dss-contacts-history] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
-                     "DELETE FROM [dss-diversitydetails-history] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
-                     "DELETE FROM [dss-employmentprogressions-history] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
-                     "DELETE FROM [dss-goals-history] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
-                     "DELETE FROM [dss-learningprogressions-history] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
-                     "DELETE FROM [dss-outcomes-history] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
-                     "DELETE FROM [dss-prioritygroups-history] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
-                     "DELETE FROM [dss-sessions-history] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
-                     "DELETE FROM [dss-subscriptions-history] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
-                     "DELETE FROM [dss-transfers-history] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
-                     "DELETE FROM [dss-webchats-history] WHERE CustomerId=@customerId OPTION (MAXDOP 1);";
-
-                connection.Open();
-
-                using (SqlCommand command = new SqlCommand(executionQuery, connection))
+                await connection.OpenAsync();
+                await using (SqlTransaction transaction = (SqlTransaction) await connection.BeginTransactionAsync() )
                 {
-                    _logger.LogInformation($"Executing the DELETE query (master and history tables)");
+                    try
+                    {
+                        string executionQuery =
+                            // master data tables
+                            @"DELETE FROM [dss-actionplans] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
+                            "DELETE FROM [dss-actions] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
+                            "DELETE FROM [dss-addresses] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
+                            "DELETE FROM [dss-contacts] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
+                            "DELETE FROM [dss-diversitydetails] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
+                            "DELETE FROM [dss-employmentprogressions] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
+                            "DELETE FROM [dss-goals] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
+                            "DELETE FROM [dss-learningprogressions] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
+                            "DELETE FROM [dss-outcomes] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
+                            "DELETE FROM [dss-prioritygroups] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
+                            "DELETE FROM [dss-sessions] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
+                            "DELETE FROM [dss-subscriptions] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
+                            "DELETE FROM [dss-transfers] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
+                            "DELETE FROM [dss-webchats] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
 
-                    command.Parameters.Add("@customerId", SqlDbType.UniqueIdentifier).Value = customerId;
-                    impactedRows = await command.ExecuteNonQueryAsync();
+                            // history tables
+                            "DELETE FROM [dss-actionplans-history] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
+                            "DELETE FROM [dss-actions-history] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
+                            "DELETE FROM [dss-addresses-history] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
+                            "DELETE FROM [dss-contacts-history] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
+                            "DELETE FROM [dss-diversitydetails-history] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
+                            "DELETE FROM [dss-employmentprogressions-history] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
+                            "DELETE FROM [dss-goals-history] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
+                            "DELETE FROM [dss-learningprogressions-history] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
+                            "DELETE FROM [dss-outcomes-history] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
+                            "DELETE FROM [dss-prioritygroups-history] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
+                            "DELETE FROM [dss-sessions-history] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
+                            "DELETE FROM [dss-subscriptions-history] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
+                            "DELETE FROM [dss-transfers-history] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
+                            "DELETE FROM [dss-webchats-history] WHERE CustomerId=@customerId OPTION (MAXDOP 1);";
+
+                        await using (SqlCommand command = new SqlCommand(executionQuery, connection, transaction))
+                        {
+                            _logger.LogInformation("Executing the DELETE query (master and history tables)");
+
+                            command.Parameters.Add("@customerId", SqlDbType.UniqueIdentifier).Value = customerId;
+                            impactedRows = await command.ExecuteNonQueryAsync();
+                        }
+
+                        await transaction.CommitAsync();
+                        _logger.LogInformation("Transaction committed successfully");
+                    }
+                    catch (Exception ex)
+                    {
+                        await transaction.RollbackAsync();
+                        _logger.LogError(ex, "Transaction rolled back due to error: {ErrorMessage}", ex.Message);
+                        throw;
+                    }
                 }
             }
 
@@ -109,33 +123,49 @@ namespace NCS.DSS.DataUtility.Services
         {
             _logger.LogInformation($"{nameof(SqlDbService)} method '{nameof(PurgeCustomerDataAsync)}' has been called");
 
-            int impactedRows = 0;
+            int impactedRows;
 
-            using (SqlConnection connection = new SqlConnection(_sqlDbConnectionString))
+            await using (SqlConnection connection = new SqlConnection(_sqlDbConnectionString))
             {
-                string executionQuery =
-                    // master data table
-                    @"DELETE FROM [dss-customers] WHERE id=@customerId OPTION (MAXDOP 1);" +
-                    "DELETE FROM [dss-interactions] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
+                await connection.OpenAsync();
 
-                     // history table
-                     "DELETE FROM [dss-customers-history] WHERE id=@customerId OPTION (MAXDOP 1);" +
-                     "DELETE FROM [dss-interactions-history] WHERE CustomerId=@customerId OPTION (MAXDOP 1);";
-
-                connection.Open();
-
-                using (SqlCommand command = new SqlCommand(executionQuery, connection))
+                await using (SqlTransaction transaction = (SqlTransaction) await connection.BeginTransactionAsync())
                 {
-                    _logger.LogInformation($"Executing the DELETE query (customer table)");
+                    try
+                    {
+                        string executionQuery =
+                            // master data table
+                            @"DELETE FROM [dss-customers] WHERE id=@customerId OPTION (MAXDOP 1);" +
+                            "DELETE FROM [dss-interactions] WHERE CustomerId=@customerId OPTION (MAXDOP 1);" +
 
-                    command.Parameters.Add("@customerId", SqlDbType.UniqueIdentifier).Value = customerId;
-                    impactedRows = await command.ExecuteNonQueryAsync();
+                            // history table
+                            "DELETE FROM [dss-customers-history] WHERE id=@customerId OPTION (MAXDOP 1);" +
+                            "DELETE FROM [dss-interactions-history] WHERE CustomerId=@customerId OPTION (MAXDOP 1);";
+
+                        await using (SqlCommand command = new SqlCommand(executionQuery, connection, transaction))
+                        {
+                            _logger.LogInformation("Executing the DELETE query (customer table)");
+
+                            command.Parameters.Add("@customerId", SqlDbType.UniqueIdentifier).Value = customerId;
+                            impactedRows = await command.ExecuteNonQueryAsync();
+                        }
+
+                        await transaction.CommitAsync();
+                        _logger.LogInformation("Transaction committed successfully");
+                    }
+                    catch (Exception ex)
+                    {
+                        await transaction.RollbackAsync();
+                        _logger.LogError(ex, "Transaction rolled back due to error: {ErrorMessage}", ex.Message);
+                        throw;
+                    }
                 }
             }
 
             _logger.LogInformation($"{nameof(SqlDbService)} method '{nameof(PurgeCustomerDataAsync)}' has finished");
             return impactedRows;
         }
+
 
         public async Task PurgeRecordDataAsync(Guid recordId, string tableName)
         {

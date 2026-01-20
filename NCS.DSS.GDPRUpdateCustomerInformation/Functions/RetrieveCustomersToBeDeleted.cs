@@ -38,7 +38,7 @@ namespace NCS.DSS.DataUtility.Functions
                     return;
                 }
 
-                _logger.LogInformation($"A total of '{customerIds.Count.ToString()}' customers have been identified as requiring deletion");
+                _logger.LogInformation("A total of '{CustomerIds}' customers have been identified as requiring deletion", customerIds.Count.ToString());
 
                 _logger.LogInformation("Sending each customer ID onto a service bus queue for processing");
 
@@ -69,8 +69,8 @@ namespace NCS.DSS.DataUtility.Functions
                     }
                 });
 
-                _logger.LogInformation($"Total number of queue messages SUCCESSFULLY sent: {_numberOfSuccesses}");
-                _logger.LogInformation($"Total number of queue messages FAILED to be sent: {_numberOfFailures}");
+                _logger.LogInformation("Total number of queue messages SUCCESSFULLY sent: {NumberOfSuccesses}", _numberOfSuccesses);
+                _logger.LogInformation("Total number of queue messages FAILED to be sent: {NumberOfFailures}", _numberOfFailures);
             }
             catch (Exception ex)
             {
