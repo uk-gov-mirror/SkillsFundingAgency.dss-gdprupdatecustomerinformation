@@ -24,6 +24,19 @@ jobs:
   displayName: Build-DotNetStandard
 
   steps:
+  - checkout: self
+    fetchDepth: 0
+
+  - task: gittools.gitversion.setup@0
+    inputs:
+      versionSpec: '6.x'
+      preferLatestVersion: true
+
+  - task: gittools.gitversion.execute@0
+    inputs:
+      useConfigFile: true
+      configFilePath: 'GitVersion.yml'
+
   - template: AzureDevOpsTemplates\Build\StepTemplates\dfc-dotnetcorefunctionapp-build-notests.yml@dfc-devops
     parameters:
       SolutionBaseName: $(SolutionBaseName)
