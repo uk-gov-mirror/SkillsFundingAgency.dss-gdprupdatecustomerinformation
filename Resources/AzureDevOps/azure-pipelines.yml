@@ -24,7 +24,7 @@ jobs:
   displayName: Build-DotNetStandard
 
   steps:
-  - template:  AzureDevOpsTemplates\Build\StepTemplates\dfc-dotnetcorefunctionapp-build-notests.yml@dfc-devops
+  - template:  AzureDevOpsTemplates\Build\StepTemplates\dfc-arm-build.yml@dfc-devops
     parameters:
       SolutionBaseName: $(SolutionBaseName)
       BuildPlatform: $(BuildPlatform)
