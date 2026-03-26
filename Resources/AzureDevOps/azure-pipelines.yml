@@ -31,3 +31,4 @@ jobs:
       BuildConfiguration: $(BuildConfiguration)
       GitVersionVersion: 6.6.x
       DotNetCoreVersion: 8.x
+      GitVersionConfigFilePath: $(System.DefaultWorkingDirectory)/Resources/AzureDevOps/GitVersion.yml
