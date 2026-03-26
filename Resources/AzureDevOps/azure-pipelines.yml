@@ -9,7 +9,7 @@ resources:
   - repository: dfc-devops
     type: github
     name: SkillsFundingAgency/dfc-devops
-    ref: refs/features/mg/fix-funcbuild
+    ref: refs/heads/features/mg/fix-funcbuild
     endpoint: 'GitHub (CDH)'
 
 pool:
