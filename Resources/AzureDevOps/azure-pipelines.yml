@@ -9,7 +9,7 @@ resources:
   - repository: dfc-devops
     type: github
     name: SkillsFundingAgency/dfc-devops
-    ref: refs/tags/v1.16.2
+    ref: refs/tags/v1.16.6
     endpoint: 'GitHub (CDH)'
 
 pool:
@@ -24,10 +24,11 @@ jobs:
   displayName: Build-DotNetStandard
 
   steps:
-  - template: AzureDevOpsTemplates\Build\StepTemplates\dfc-dotnetcorefunctionapp-build-notests.yml@dfc-devops
+  - template:  AzureDevOpsTemplates\Build\StepTemplates\dfc-dotnetcorefunctionapp-build-notests.yml@dfc-devops
     parameters:
       SolutionBaseName: $(SolutionBaseName)
       BuildPlatform: $(BuildPlatform)
       BuildConfiguration: $(BuildConfiguration)
-      GitVersionVersion: 5.12.x
+      GitVersionVersion: 6.6.x
       DotNetCoreVersion: 8.x
+      GitVersionConfigFilePath: $(System.DefaultWorkingDirectory)/Resources/AzureDevOps/GitVersion.yml
