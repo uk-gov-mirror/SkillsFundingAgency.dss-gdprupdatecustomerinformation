@@ -1,12 +1,17 @@
-﻿using Microsoft.Azure.Cosmos;
+﻿using Grpc.Core;
+using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Cosmos.Linq;
 using Microsoft.Extensions.Logging;
 using NCS.DSS.DataUtility.Interfaces;
 using NCS.DSS.DataUtility.Models;
+using System.ComponentModel;
+using System.Net;
+using System.Reflection.Metadata;
 using Action = NCS.DSS.DataUtility.Models.Action;
 using Address = NCS.DSS.DataUtility.Models.Address;
 using Outcome = NCS.DSS.DataUtility.Models.Outcome;
 using Transfer = NCS.DSS.DataUtility.Models.Transfer;
+using Container = Microsoft.Azure.Cosmos.Container;
 
 namespace NCS.DSS.DataUtility.Services
 {
@@ -108,6 +113,35 @@ namespace NCS.DSS.DataUtility.Services
             }
 
             bool success = await DeleteCosmosDocumentAsync(customer.CustomerId.ToString(), cosmosDbContainer);
+
+            if (success)
+            {
+                return (true, 1);
+            }
+
+            return (false, 0);
+        }
+
+        public async Task<(bool processedSuccessfully, int impactedRecordCount)> PurgeCustomerRecordViaTTLAsync(Guid customerId, int ttl)
+        {
+            Microsoft.Azure.Cosmos.Container cosmosDbContainer = _cosmosDbClient.GetContainer("customers", "customers");
+
+            var response = await cosmosDbContainer.ReadItemAsync<dynamic>(customerId.ToString(), PartitionKey.None);
+
+            if (response.StatusCode != HttpStatusCode.OK)
+            {
+                return (true, 0);
+            }
+            dynamic item = response.Resource;
+
+            item.Ttl = ttl;
+            bool success = true;
+
+            await cosmosDbContainer.ReplaceItemAsync(item, (string)item.id);
+            //add check for if above failed to set success to false
+            
+
+            //bool success = await DeleteCosmosDocumentAsync(customer.CustomerId.ToString(), cosmosDbContainer);
 
             if (success)
             {

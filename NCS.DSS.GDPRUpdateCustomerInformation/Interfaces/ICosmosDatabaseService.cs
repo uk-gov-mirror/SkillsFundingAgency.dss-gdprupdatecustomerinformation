@@ -12,6 +12,8 @@
 
         Task<(bool processedSuccessfully, int impactedRecordCount)> PurgeCustomerRecordAsync(Guid customerId);
 
+        Task<(bool processedSuccessfully, int impactedRecordCount)> PurgeCustomerRecordViaTTLAsync(Guid customerId, int ttl);
+
         Task<(bool processedSuccessfully, int impactedRecordCount)> PurgeDiversityDetailsForCustomerAsync(Guid customerId);
 
         Task<(bool processedSuccessfully, int impactedRecordCount)> PurgeEmploymentProgressionsForCustomerAsync(Guid customerId);

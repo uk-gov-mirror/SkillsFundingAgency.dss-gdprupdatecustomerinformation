@@ -30,6 +30,13 @@ namespace NCS.DSS.DataUtility.Functions
         [Function("SetTTLOnItem")]
         public async Task<IActionResult> SetTTLOnItem([HttpTrigger(AuthorizationLevel.Function, "post")] HttpRequest req)
         {
+            //replace below with retrieval of message from service bus queue
+            Guid customerId = Guid.Parse("");
+            //60 second time to live
+            int ttl = 60;
+
+
+            await _cosmosDatabaseService.PurgeCustomerRecordViaTTLAsync(customerId, ttl);
 
             return new OkResult();
         }
